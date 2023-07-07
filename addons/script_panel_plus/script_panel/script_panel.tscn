@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://ln8u12ni037b"]
 
-[ext_resource type="Script" path="res://addons/advanced_script_panel/script_panel/script_panel.gd" id="1_b1kur"]
-[ext_resource type="Script" path="res://addons/advanced_script_panel/script_panel/script_list.gd" id="2_g67jx"]
+[ext_resource type="Script" path="res://addons/script_panel_plus/script_panel/script_panel.gd" id="1_b1kur"]
+[ext_resource type="Script" path="res://addons/script_panel_plus/script_panel/script_list.gd" id="2_g67jx"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_06sl4"]
 

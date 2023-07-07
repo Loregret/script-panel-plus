@@ -2,9 +2,9 @@
 extends EditorPlugin
 
 const project_settings_category := "script_panel_plus/panel_settings/"
-const config_path := "res://addons/advanced_script_panel/configs/config.cfg"
-const defaults_path := "res://addons/advanced_script_panel/configs/defaults.cfg"
-const scene := preload("res://addons/advanced_script_panel/script_panel/script_panel.tscn")
+const config_path := "res://addons/script_panel_plus/configs/config.cfg"
+const defaults_path := "res://addons/script_panel_plus/configs/defaults.cfg"
+const scene := preload("res://addons/script_panel_plus/script_panel/script_panel.tscn")
 
 var config: ConfigFile
 var defaults: ConfigFile
