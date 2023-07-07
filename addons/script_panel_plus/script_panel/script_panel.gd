@@ -866,6 +866,7 @@ func reselect_current_script() -> void:
 	if script_list.is_anything_selected(): return
 	
 	script_list.add_theme_color_override("font_selected_color", list_get_current_script_color())
+	script_list.add_theme_color_override("font_hovered_color", list_get_current_script_color())
 	script_list.deselect_all()
 	
 	
