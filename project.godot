@@ -11,10 +11,10 @@ config_version=5
 [application]
 
 config/name="Advanced Script Panel"
-run/main_scene="res://addons/advanced_script_panel/script_panel/script_panel.tscn"
+run/main_scene="res://addons/script_panel_plus/script_panel/script_panel.tscn"
 config/features=PackedStringArray("4.0", "GL Compatibility")
 boot_splash/show_image=false
-config/icon="res://addons/advanced_script_panel/assets/icon.svg"
+config/icon="res://addons/script_panel_plus/assets/icon.svg"
 
 [filesystem]
 
