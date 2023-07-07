@@ -151,7 +151,9 @@ func _process(delta: float) -> void:
 
 func check_not_saved()           -> void:
 	if not_saved.is_empty(): return
-	for i in not_saved: check_save_state(i)
+	for i in not_saved: 
+		if is_instance_valid(i):
+			check_save_state(i)
 
 func check_for_script_change()   -> void:
 	if not script_list.is_anything_selected(): reselect_current_script()
