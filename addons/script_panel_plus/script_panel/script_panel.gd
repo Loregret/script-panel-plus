@@ -25,7 +25,7 @@ var show_button: BaseButton
 
 var save_data := {}
 var load_data := {}
-const save_path := "res://addons/advanced_script_panel/saves/save.dat"
+const save_path := "res://addons/script_panel_plus/saves/save.dat"
 
 ## Script Arrays
 var all:     Array[ScriptItem] = []
