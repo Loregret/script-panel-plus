@@ -13,6 +13,7 @@ var engine_editor_interface:   EditorInterface
 var engine_script_editor:      ScriptEditor
 var engine_script_vbox:        VSplitContainer
 var engine_script_list:        ItemList
+var engine_screen_select_button: Control
 
 var script_panel: Control
 var top_bar: Control
@@ -36,6 +37,7 @@ func _enter_tree() -> void:
 	script_panel.update_tabs()
 
 func _exit_tree() -> void:
+	hide_screen_select_button()
 	script_panel.save_last_session()
 	close_config()
 	script_panel.show_panel()
@@ -59,6 +61,7 @@ func update() -> void:
 		hide_top_bar()
 	
 	check_current_bottom_bar_visibility()
+	check_current_screen_button_visibility()
 	
 	var search_bar := script_panel.search_line.get_parent() as Control
 	search_bar.visible = settings["show_search_line"]
@@ -180,6 +183,34 @@ func show_current_bottom_bar() -> void:
 	var cur_bottom_bar := get_current_bottom_bar()
 	if cur_bottom_bar: cur_bottom_bar.visible = true
 
+func check_current_screen_button_visibility() -> void:
+	if settings["show_screen_select_button"]:
+		show_screen_select_button()
+	else:
+		hide_screen_select_button()
+
+func show_screen_select_button() -> void:
+	var _children: Array[Node] = engine_script_editor.get_child(0).find_children("*", "ScreenSelect", false, false)
+	var new_parent :Control = script_panel.line_label.get_parent()
+	
+	if _children.size() < 1: return
+	if not new_parent: return
+	
+	engine_screen_select_button = _children[0]
+	
+	if not engine_screen_select_button: return
+	
+	engine_screen_select_button.reparent(new_parent)
+	new_parent.move_child(engine_screen_select_button, -1)
+
+func hide_screen_select_button() -> void:
+	var _parent:Control = engine_script_editor.get_child(0)
+	
+	if not _parent: return
+	if not engine_screen_select_button: return
+	
+	engine_screen_select_button.reparent(_parent)
+	_parent.move_child(engine_screen_select_button, -1)
 
 ## GET NODES
 

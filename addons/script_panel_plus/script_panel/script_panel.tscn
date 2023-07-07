@@ -65,6 +65,7 @@ select_all_on_focus = true
 [node name="MenuButton" type="MenuButton" parent="VBoxContainer/SearchBar"]
 layout_mode = 2
 size_flags_horizontal = 4
+tooltip_text = "Current Sorting"
 text = "..."
 flat = false
 item_count = 5
@@ -187,6 +188,7 @@ text_overrun_behavior = 3
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
+tooltip_text = "Hide Panel"
 theme_override_colors/font_hover_color = Color(0, 0, 0, 0.215686)
 theme_override_font_sizes/font_size = 13
 text = "<"
