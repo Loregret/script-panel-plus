@@ -281,4 +281,4 @@ func upload_engine_nodes_to_script_panel() -> void:
 
 func _scripts_are_loading() -> bool:
 	return get_editor_interface().get_script_editor().\
-	get_child(0).get_child(0).get_children().size() < 13
+	get_child(0).get_child(0).get_children().size() < 15
