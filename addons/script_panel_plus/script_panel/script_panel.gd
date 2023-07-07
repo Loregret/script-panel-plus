@@ -1032,11 +1032,12 @@ func list_add_item(script_item: ScriptItem) -> void:
 					else: text += settings["lock_indicator"]
 					break
 	
-	if favs.has(script_item): 
-		if settings["indicator_icons"]:
-			text += " ★"
-		else:
-			text += settings["favourite_indicator"]
+	if settings["show_script_favourite_indicator"]:
+		if favs.has(script_item): 
+			if settings["indicator_icons"]:
+				text += " ★"
+			else:
+				text += settings["favourite_indicator"]
 	
 	var id := script_list.add_item(text)
 	script_list.set_item_metadata(id, script_item)
