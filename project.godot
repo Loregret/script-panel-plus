@@ -1,0 +1,27 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Advanced Script Panel"
+run/main_scene="res://addons/advanced_script_panel/script_panel/script_panel.tscn"
+config/features=PackedStringArray("4.0", "GL Compatibility")
+boot_splash/show_image=false
+config/icon="res://addons/advanced_script_panel/assets/icon.svg"
+
+[filesystem]
+
+import/blender/enabled=false
+import/fbx/enabled=false
+
+[rendering]
+
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="gl_compatibility"

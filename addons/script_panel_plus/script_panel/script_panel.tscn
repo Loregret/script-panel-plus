@@ -1,0 +1,199 @@
+[gd_scene load_steps=9 format=3 uid="uid://ln8u12ni037b"]
+
+[ext_resource type="Script" path="res://addons/advanced_script_panel/script_panel/script_panel.gd" id="1_b1kur"]
+[ext_resource type="Script" path="res://addons/advanced_script_panel/script_panel/script_list.gd" id="2_g67jx"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_06sl4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_as5tr"]
+bg_color = Color(0, 0, 0, 0.254902)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1uqvt"]
+bg_color = Color(0, 0, 0, 0.254902)
+
+[sub_resource type="LabelSettings" id="LabelSettings_n3idw"]
+font_size = 14
+font_color = Color(0.858824, 0.258824, 0.266667, 1)
+outline_color = Color(0, 0, 0, 1)
+shadow_color = Color(0, 0, 0, 0.14902)
+
+[sub_resource type="LabelSettings" id="LabelSettings_v435h"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_n74ok"]
+font_size = 11
+font_color = Color(1, 1, 1, 0.564706)
+
+[node name="ScriptPanel" type="HBoxContainer"]
+clip_contents = true
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 262.0
+grow_vertical = 2
+size_flags_vertical = 3
+alignment = 2
+script = ExtResource("1_b1kur")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="TabBar" type="TabBar" parent="VBoxContainer"]
+layout_mode = 2
+max_tab_width = 100
+drag_to_rearrange_enabled = true
+tabs_rearrange_group = 0
+tab_count = 5
+tab_0/title = "All"
+tab_1/title = "Scripts"
+tab_2/title = "Docs"
+tab_3/title = "Files"
+tab_4/title = "★"
+
+[node name="SearchBar" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SearchLine" type="LineEdit" parent="VBoxContainer/SearchBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Search"
+clear_button_enabled = true
+select_all_on_focus = true
+
+[node name="MenuButton" type="MenuButton" parent="VBoxContainer/SearchBar"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "..."
+flat = false
+item_count = 5
+popup/item_0/text = "No Sorting"
+popup/item_0/checkable = 2
+popup/item_0/id = 0
+popup/item_1/text = "Sort: Name"
+popup/item_1/checkable = 2
+popup/item_1/id = 1
+popup/item_2/text = "Sort: Date"
+popup/item_2/checkable = 2
+popup/item_2/checked = true
+popup/item_2/id = 2
+popup/item_3/text = ""
+popup/item_3/id = 3
+popup/item_3/disabled = true
+popup/item_3/separator = true
+popup/item_4/text = "Type Groups"
+popup/item_4/checkable = 1
+popup/item_4/checked = true
+popup/item_4/id = 4
+
+[node name="ScriptList" type="ItemList" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 0
+theme_override_constants/line_separation = 0
+theme_override_font_sizes/font_size = 16
+theme_override_styles/focus = SubResource("StyleBoxEmpty_06sl4")
+theme_override_styles/selected = SubResource("StyleBoxFlat_as5tr")
+theme_override_styles/selected_focus = SubResource("StyleBoxFlat_1uqvt")
+allow_reselect = true
+max_text_lines = 2
+max_columns = 0
+same_column_width = true
+script = ExtResource("2_g67jx")
+
+[node name="PopupMenu" type="PopupMenu" parent="VBoxContainer/ScriptList"]
+size = Vector2i(173, 120)
+allow_search = false
+item_count = 5
+item_0/text = "Add to Favorites ★"
+item_0/id = 1
+item_1/text = "Lock in place 🔒"
+item_1/id = 2
+item_2/text = "Set custom name ♣️"
+item_2/id = 3
+item_3/text = ""
+item_3/id = 99
+item_3/separator = true
+item_4/text = "Close Script"
+item_4/id = 0
+
+[node name="ErrorLabel" type="Label" parent="VBoxContainer"]
+visible = false
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 1
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+text = "ERROR"
+label_settings = SubResource("LabelSettings_n3idw")
+autowrap_mode = 3
+
+[node name="RenameBar" type="VBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/RenameBar"]
+layout_mode = 2
+text = "Add custom name..."
+label_settings = SubResource("LabelSettings_v435h")
+clip_text = true
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/RenameBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "..."
+middle_mouse_paste_enabled = false
+select_all_on_focus = true
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer/RenameBar"]
+layout_mode = 2
+alignment = 1
+
+[node name="ButtonCancel" type="Button" parent="VBoxContainer/RenameBar/Buttons"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="ButtonRestore" type="Button" parent="VBoxContainer/RenameBar/Buttons"]
+layout_mode = 2
+text = "Restore"
+
+[node name="ButtonSubmit" type="Button" parent="VBoxContainer/RenameBar/Buttons"]
+layout_mode = 2
+text = "Submit"
+
+[node name="InfoPanel" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LineNum" type="Label" parent="VBoxContainer/InfoPanel"]
+layout_mode = 2
+text = "0 : 0"
+label_settings = SubResource("LabelSettings_n74ok")
+vertical_alignment = 2
+
+[node name="ScriptName" type="Label" parent="VBoxContainer/InfoPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Script Name"
+label_settings = SubResource("LabelSettings_n74ok")
+horizontal_alignment = 2
+vertical_alignment = 2
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="HideButton" type="Button" parent="VBoxContainer/InfoPanel"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0.215686)
+theme_override_font_sizes/font_size = 13
+text = "<"
+flat = true
+alignment = 2
+
+[node name="ShowButton" type="Button" parent="."]
+visible = false
+layout_mode = 2
+text = ">"

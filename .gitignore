@@ -1,0 +1,17 @@
+# Godot 4+ specific ignores
+.godot/
+
+# Godot-specific ignores
+.import/
+export.cfg
+export_presets.cfg
+
+# Logo
+*.import
+logo.png.import
+
+# VScode
+.vscode/
+
+# Plugin save files
+addons/advanced_script_panel/saves/
