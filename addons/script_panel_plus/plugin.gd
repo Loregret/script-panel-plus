@@ -139,7 +139,7 @@ func check_top_bar_visibility() -> void:
 		hide_top_bar()
 
 func check_current_screen_button_visibility() -> void:
-	if settings["show_screen_select_button"]:
+	if settings["show_screen_select_button"] and not settings["show_top_bar"]:
 		show_screen_select_button()
 	else:
 		hide_screen_select_button()
@@ -207,13 +207,11 @@ func show_screen_select_button() -> void:
 	new_parent.move_child(engine_screen_select_button, -1)
 
 func hide_screen_select_button() -> void:
-	var _parent:Control = engine_script_editor.get_child(0)
-	
-	if not _parent: return
+	if not top_bar: return
 	if not engine_screen_select_button: return
 	
-	engine_screen_select_button.reparent(_parent)
-	_parent.move_child(engine_screen_select_button, -1)
+	engine_screen_select_button.reparent(top_bar)
+	top_bar.move_child(engine_screen_select_button, -1)
 
 
 ## GET NODES
