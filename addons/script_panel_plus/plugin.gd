@@ -26,8 +26,12 @@ var settings := {}
 func _enter_tree() -> void:
 	while _scripts_are_loading(): 
 		await get_tree().process_frame
+	
 	load_config()
 	load_engine_nodes()
+	if not top_bar: 
+		top_bar = get_top_bar()
+		top_bar_parent = top_bar.get_parent()
 	create_script_panel()
 	update()
 	project_settings_changed.connect(update)
@@ -132,10 +136,6 @@ func set_defaults() -> void:
 ## SHOW / HIDE
 
 func check_top_bar_visibility() -> void:
-	if not top_bar: 
-		top_bar = get_top_bar()
-		top_bar_parent = top_bar.get_parent()
-	
 	if settings["show_top_bar"]:
 		show_top_bar()
 	else:
@@ -148,8 +148,6 @@ func check_current_bottom_bar_visibility() -> void:
 		hide_current_bottom_bar()
 
 func hide_top_bar() -> void:
-	if top_bar: return
-	
 	top_bar.visibility_layer = 0
 	
 	var new_parent = engine_script_editor
