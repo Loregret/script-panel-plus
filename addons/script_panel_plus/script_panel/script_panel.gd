@@ -851,7 +851,7 @@ func delete_script_item(index: int) -> void:
 	
 	remove_script_lock(script_item)
 	
-	var _top_bar:Control = plugin_reference.get_top_bar()
+	var _top_bar:Control = plugin_reference.top_bar
 	if _top_bar:_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 10)
 	
 	all.erase(script_item)

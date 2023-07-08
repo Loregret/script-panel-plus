@@ -131,9 +131,7 @@ func set_defaults() -> void:
 ## SHOW / HIDE
 
 func check_top_bar_visibility() -> void:
-	if not top_bar: 
-		top_bar = get_top_bar()
-		top_bar_parent = top_bar.get_parent()
+	if not top_bar: return
 	
 	if settings["show_top_bar"]:
 		show_top_bar()
@@ -157,7 +155,7 @@ func check_search_bar_visibility() -> void:
 	search_bar.visible = settings["show_search_line"]
 
 func hide_top_bar() -> void:
-	if top_bar: return
+	if not top_bar: return
 	
 	top_bar = engine_script_editor.get_child(0).get_child(0)
 	top_bar_parent = top_bar.get_parent()
@@ -173,7 +171,6 @@ func show_top_bar() -> void:
 	top_bar.reparent(top_bar_parent, false)
 	top_bar_parent.move_child(top_bar, 0)
 	top_bar.visibility_layer = 1
-	top_bar = null
 
 func hide_engine_script_vbox() -> void:
 	engine_script_vbox.set("visible", false)
@@ -223,9 +220,6 @@ func hide_screen_select_button() -> void:
 
 ## GET NODES
 
-func get_top_bar() -> Control:
-	return engine_script_editor.get_child(0).get_child(0) as Control
-
 func get_current_bottom_bar() -> Control:
 	var result: Control
 	
@@ -268,6 +262,8 @@ func load_engine_nodes() -> void:
 	get_child(0).get_child(1).get_child(0)
 	engine_script_list = engine_script_editor.get_child(0).get_child(1)\
 	.get_child(0).get_child(0).get_child(1)
+	top_bar = engine_script_editor.get_child(0).get_child(0)
+	top_bar_parent = top_bar.get_parent()
 
 
 ## SCRIPT PANEL

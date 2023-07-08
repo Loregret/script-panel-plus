@@ -16,11 +16,11 @@ func _get_drag_data(at_position: Vector2):
 	var index: int = get_item_at_position(at_position)
 	var script = get_item_metadata(index)
 	var mydata := [index, script]
-
+	
 	var label := Label.new()
 	label.text = get_item_text(index)
 	set_drag_preview(label)
-
+	
 	return mydata
 
 func _drop_data(at_position: Vector2, data) -> void:
