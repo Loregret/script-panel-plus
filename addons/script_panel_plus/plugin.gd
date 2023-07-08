@@ -53,10 +53,8 @@ func update() -> void:
 	script_panel.toggle_hide_button()
 	script_panel.update_tabs()
 	
-	if settings["show_top_bar"]:
-		show_top_bar()
-	else:
-		hide_top_bar()
+	
+	check_top_bar_visibility()
 	
 	check_current_bottom_bar_visibility()
 	
@@ -133,11 +131,25 @@ func set_defaults() -> void:
 
 ## SHOW / HIDE
 
+func check_top_bar_visibility() -> void:
+	if not top_bar: 
+		top_bar = get_top_bar()
+		top_bar_parent = top_bar.get_parent()
+	
+	if settings["show_top_bar"]:
+		show_top_bar()
+	else:
+		hide_top_bar()
+
+func check_current_bottom_bar_visibility() -> void:
+	if settings["show_bottom_bar"]: 
+		show_current_bottom_bar()
+	else: 
+		hide_current_bottom_bar()
+
 func hide_top_bar() -> void:
 	if top_bar: return
 	
-	top_bar = engine_script_editor.get_child(0).get_child(0)
-	top_bar_parent = top_bar.get_parent()
 	top_bar.visibility_layer = 0
 	
 	var new_parent = engine_script_editor
@@ -150,7 +162,6 @@ func show_top_bar() -> void:
 	top_bar.reparent(top_bar_parent, false)
 	top_bar_parent.move_child(top_bar, 0)
 	top_bar.visibility_layer = 1
-	top_bar = null
 
 func hide_engine_script_vbox() -> void:
 	engine_script_vbox.set("visible", false)
@@ -166,12 +177,6 @@ func hide_all_bottom_bars() -> void:
 	for i in get_all_bottom_bars():
 		i.visible = false
 
-func check_current_bottom_bar_visibility() -> void:
-	if settings["show_bottom_bar"]: 
-		show_current_bottom_bar()
-	else: 
-		hide_current_bottom_bar()
-
 func hide_current_bottom_bar() -> void:
 	var cur_bottom_bar := get_current_bottom_bar()
 	if cur_bottom_bar: cur_bottom_bar.visible = false
@@ -182,6 +187,9 @@ func show_current_bottom_bar() -> void:
 
 
 ## GET NODES
+
+func get_top_bar() -> Control:
+	return engine_script_editor.get_child(0).get_child(0) as Control
 
 func get_current_bottom_bar() -> Control:
 	var result: Control
