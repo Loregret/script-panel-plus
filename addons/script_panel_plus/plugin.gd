@@ -157,8 +157,6 @@ func check_search_bar_visibility() -> void:
 func hide_top_bar() -> void:
 	if not top_bar: return
 	
-	top_bar = engine_script_editor.get_child(0).get_child(0)
-	top_bar_parent = top_bar.get_parent()
 	top_bar.visibility_layer = 0
 	
 	var new_parent = engine_script_editor
