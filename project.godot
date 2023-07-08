@@ -16,10 +16,6 @@ config/features=PackedStringArray("4.1", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://addons/script_panel_plus/assets/icons/icon.svg"
 
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/script_panel_plus/plugin.cfg")
-
 [filesystem]
 
 import/blender/enabled=false

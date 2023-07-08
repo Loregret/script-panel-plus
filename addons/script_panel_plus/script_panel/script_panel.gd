@@ -868,7 +868,6 @@ func reselect_current_script() -> void:
 	if script_list.is_anything_selected(): return
 	
 	script_list.add_theme_color_override("font_selected_color", list_get_current_script_color())
-	script_list.add_theme_color_override("font_hovered_color", list_get_current_script_color())
 	script_list.deselect_all()
 	
 	
@@ -962,6 +961,7 @@ func list_set_items_color(id: int, script_item: ScriptItem) -> void:
 	if script_item.type == "scripts":
 		var color:Color = settings["scripts_color"]
 		script_list.set_item_custom_fg_color(id, color)
+		script_list.add_theme_color_override("font_hovered_color", color)
 	
 	if script_item.type == "docs":
 		var color:Color = settings["docs_color"]
