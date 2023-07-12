@@ -555,6 +555,8 @@ func sort_current_tab() -> void:
 	on_tab_changed(-1)
 
 func sort_tab(tab_name: String) -> void:
+	if current_sorting[tab_name] == MANUAL: return
+	
 	var _array := get_script_array(tab_name)
 	
 	var sort_name := sort_alphabetical
@@ -579,7 +581,6 @@ func sort_tab(tab_name: String) -> void:
 			_array.sort_custom(sort_date)
 		DATE_BACKWARDS:
 			_array.sort_custom(sort_date_rev)
-	
 
 func sort_all_tab() -> void:
 	sort_tab("all")
@@ -745,10 +746,7 @@ func update_locked_scripts_position() -> void:
 		
 		if not _script: continue
 		if not _array.has(_script): continue
-		
-		if _array[_index] != _script:
-			_array.erase(_script)
-			_array.insert(_index, _script)
+		move_script_item(_script, _array, _index)
 
 
 ## FONT SIZE
@@ -858,6 +856,12 @@ func delete_script_item(index: int) -> void:
 		_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 10)
 	
 	all.erase(script_item)
+
+func move_script_item(script_item: ScriptItem, script_array: Array[ScriptItem],\
+index: int) -> void:
+	if script_array[index] != script_item:
+		script_array.erase(script_item)
+		script_array.insert(index, script_item)
 
 func update_all_scripts() -> void:
 	var script_count:int = engine_script_list.item_count
@@ -1159,17 +1163,15 @@ func load_last_session() -> void:
 	if not settings["save_session"]: return
 	
 	var file = FileAccess.open(save_path, FileAccess.READ)
-	if file: 
-		load_data = file.get_var()
-	else:
-		return
+	if file: load_data = file.get_var()
+	else: return
 	
 	if load_data.is_empty(): return
 	
 	_load_tabs()
-	_load_script_arrays()
 	_load_sorting()
 	_load_font_size()
+	_load_script_arrays()
 	_load_locked_scripts()
 	_load_current_script()
 	update_font_size()
@@ -1215,8 +1217,11 @@ func _load_locked_scripts() -> void:
 		toggle_script_lock(new_script, i[1])
 
 func _load_custom_array(saved_array: Array, array_name: String) -> void:
-	for i in saved_array:
-		_load_script_item(i, array_name)
+	for i in range(0, saved_array.size() ):
+		_load_script_item(saved_array[i], array_name)
+	for x in range(0, saved_array.size()):
+		var _array := get_script_array(array_name)
+		move_script_item(get_script_by_path(saved_array[x][2]), _array, x)
 
 func _load_script_item(saved_script: Array, script_array_name: String) -> ScriptItem:
 	var _orig_text: String = saved_script[0]
@@ -1229,7 +1234,6 @@ func _load_script_item(saved_script: Array, script_array_name: String) -> Script
 	var script_array := get_script_array(script_array_name)
 	var is_favs := script_array_name == "favs"
 	
-	
 	if script:
 		script.text = _text
 		script.original_text = _orig_text
@@ -1241,11 +1245,11 @@ func _load_script_item(saved_script: Array, script_array_name: String) -> Script
 		
 		return script
 	else:
-		var _script := add_script_item(_text, _path, _type, false, is_favs)
-		_script.original_text = _orig_text
-		_script.last_time_edited = _time
+		script = add_script_item(_text, _path, _type, false, is_favs)
+		script.original_text = _orig_text
+		script.last_time_edited = _time
 		
-		return _script
+		return script
 
 func _load_current_script() -> void:
 	if not load_data.has("current_script"): return
