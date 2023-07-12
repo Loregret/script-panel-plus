@@ -16,6 +16,10 @@ config/features=PackedStringArray("4.1", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://addons/script_panel_plus/assets/icons/icon.svg"
 
+[dotnet]
+
+project/assembly_name="Script Panel Plus"
+
 [filesystem]
 
 import/blender/enabled=false

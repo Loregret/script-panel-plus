@@ -744,9 +744,7 @@ func update_locked_scripts_position() -> void:
 		if not _script: continue
 		if not _array.has(_script): continue
 		
-		if _array[_index] != _script:
-			_array.erase(_script)
-			_array.insert(_index, _script)
+		move_script_item(_script, _array, _index)
 
 
 ## FONT SIZE
@@ -855,6 +853,12 @@ func delete_script_item(index: int) -> void:
 	if _top_bar:_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 10)
 	
 	all.erase(script_item)
+
+func move_script_item(script_item: ScriptItem, script_array: Array[ScriptItem],\
+index: int) -> void:
+	if script_array[index] != script_item:
+		script_array.erase(script_item)
+		script_array.insert(index, script_item)
 
 func update_all_scripts() -> void:
 	var script_count:int = engine_script_list.item_count
@@ -1213,8 +1217,11 @@ func _load_locked_scripts() -> void:
 		toggle_script_lock(new_script, i[1])
 
 func _load_custom_array(saved_array: Array, array_name: String) -> void:
-	for i in saved_array:
-		_load_script_item(i, array_name)
+	for i in range(0, saved_array.size() ):
+		_load_script_item(saved_array[i], array_name)
+	for x in range(0, saved_array.size()):
+		var _array := get_script_array(array_name)
+		move_script_item(get_script_by_path(saved_array[x][2]), _array, x)
 
 func _load_script_item(saved_script: Array, script_array_name: String) -> ScriptItem:
 	var _orig_text: String = saved_script[0]
