@@ -173,11 +173,11 @@ func check_for_script_change()   -> void:
 		add_script_item_by_engine_index(selected_item, true)
 		current_script = get_script_from_engine_list_index(selected_item)
 		sort_all_tab()
-	
 	_on_script_editor_changed(current_script)
 	check_current_tab()
 	check_current_script_label()
 	check_rename_status(current_script)
+	update_locked_scripts_position()
 	
 	if prev_script:
 		_on_script_change(prev_script)
