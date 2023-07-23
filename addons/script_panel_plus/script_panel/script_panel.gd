@@ -11,6 +11,7 @@ var engine_script_list:        ItemList
 
 ## new Nodes
 var script_list:     ItemList
+var method_list:     ItemList
 var error_label:     Label
 var line_label:      Label
 var script_label:    Label
@@ -97,13 +98,13 @@ class ScriptItem:
 		return path
 
 
-
 ## MAIN
 
 func _ready() -> void:
 	## NODES
-	script_list = $VBoxContainer/ScriptList
-	popup = $VBoxContainer/ScriptList/PopupMenu
+	script_list = $VBoxContainer/VSplitContainer/ScriptList
+	method_list = $VBoxContainer/VSplitContainer/MethodList
+	popup = $VBoxContainer/VSplitContainer/ScriptList/PopupMenu
 	tab_bar = $VBoxContainer/TabBar
 	menu_button = $VBoxContainer/SearchBar/MenuButton
 	error_label = $VBoxContainer/ErrorLabel
@@ -125,6 +126,7 @@ func _ready() -> void:
 	script_list.item_selected.connect(_on_item_selected)
 	script_list.item_clicked.connect(_on_item_click)
 	script_list.item_dropped.connect(_on_list_item_dropped)
+	method_list.item_selected.connect(_on_method_selected)
 	show_button.pressed.connect(show_panel)
 	hide_button.pressed.connect(hide_panel)
 	rename_bar.get_node("./Buttons/ButtonCancel").pressed.connect(_on_custom_name_cancel)
@@ -145,6 +147,13 @@ func _process(delta: float) -> void:
 	check_current_save_state()
 	check_not_saved()
 	list_update()
+	methods_list_update()
+
+func update() -> void:
+	if settings["list_multiple_columns"]:
+		script_list.max_columns = 0
+	else:
+		script_list.max_columns = 1
 
 
 ## CHECKS
@@ -1086,6 +1095,33 @@ func list_get_scripts_index(script: ScriptItem) -> int:
 func is_list_showing_script(script: ScriptItem) -> bool:
 	if list_get_scripts_index(script) != -1: return true
 	else: return false
+
+
+## METHOD-LIST
+
+func methods_list_update() -> void:
+	var engine_method_list := plugin_reference.engine_method_list as ItemList
+	var engine_docs_h_list := plugin_reference.engine_docs_headers_list as ItemList
+	method_list.clear()
+	method_list.visible = false
+	
+	if current_script.type == "docs":
+		if not settings["show_docs_headers_list"]: return
+		method_list.visible = true
+		for i in engine_docs_h_list.item_count:
+			method_list.add_item(engine_docs_h_list.get_item_text(i))
+	
+	elif current_script.type == "scripts":
+		if not settings["show_method_list"]: return
+		method_list.visible = true
+		for i in engine_method_list.item_count:
+			method_list.add_item(engine_method_list.get_item_text(i))
+
+func _on_method_selected(idx: int) -> void:
+	if current_script.type == "docs":
+		plugin_reference.engine_docs_headers_list.item_selected.emit(idx)
+	if current_script.type == "scripts":
+		plugin_reference.engine_method_list.item_selected.emit(idx)
 
 
 ## SAVE

@@ -91,7 +91,11 @@ popup/item_4/checkable = 1
 popup/item_4/checked = true
 popup/item_4/id = 4
 
-[node name="ScriptList" type="ItemList" parent="VBoxContainer"]
+[node name="VSplitContainer" type="VSplitContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScriptList" type="ItemList" parent="VBoxContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -109,7 +113,7 @@ max_columns = 0
 same_column_width = true
 script = ExtResource("2_g67jx")
 
-[node name="PopupMenu" type="PopupMenu" parent="VBoxContainer/ScriptList"]
+[node name="PopupMenu" type="PopupMenu" parent="VBoxContainer/VSplitContainer/ScriptList"]
 size = Vector2i(173, 120)
 allow_search = false
 item_count = 5
@@ -124,6 +128,10 @@ item_3/id = 99
 item_3/separator = true
 item_4/text = "Close Script"
 item_4/id = 0
+
+[node name="MethodList" type="ItemList" parent="VBoxContainer/VSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="ErrorLabel" type="Label" parent="VBoxContainer"]
 visible = false

@@ -9,15 +9,17 @@ const scene := preload("res://addons/script_panel_plus/script_panel/script_panel
 var config: ConfigFile
 var defaults: ConfigFile
 
-var engine_editor_interface:   EditorInterface
-var engine_script_editor:      ScriptEditor
-var engine_script_vbox:        VSplitContainer
-var engine_script_list:        ItemList
+var engine_editor_interface:     EditorInterface
+var engine_script_editor:        ScriptEditor
+var engine_script_vbox:          VSplitContainer
+var engine_script_list:          ItemList
+var engine_method_list:          ItemList
+var engine_docs_headers_list:     ItemList
 var engine_screen_select_button: Control
 
-var script_panel: Control
-var top_bar: Control
-var top_bar_parent: Control
+var script_panel:                Control
+var top_bar:                     Control
+var top_bar_parent:              Control
 
 var settings := {}
 
@@ -60,10 +62,8 @@ func update() -> void:
 	check_current_screen_button_visibility()
 	check_search_bar_visibility()
 	
-	if settings["list_multiple_columns"]:
-		script_panel.script_list.max_columns = 0
-	else:
-		script_panel.script_list.max_columns = 1
+	script_panel.update()
+
 
 
 ## CONFIG
@@ -254,10 +254,16 @@ func get_all_bottom_bars() -> Array[Control]:
 func load_engine_nodes() -> void:
 	engine_editor_interface = get_editor_interface()
 	engine_script_editor = engine_editor_interface.get_script_editor()
+	
 	engine_script_vbox = engine_script_editor.\
 	get_child(0).get_child(1).get_child(0)
+	
 	engine_script_list = engine_script_editor.get_child(0).get_child(1)\
 	.get_child(0).get_child(0).get_child(1)
+	
+	engine_method_list = engine_script_vbox.get_child(1).get_child(-2)
+	engine_docs_headers_list = engine_script_vbox.get_child(1).get_child(-1)
+	
 	top_bar = engine_script_editor.get_child(0).get_child(0)
 	top_bar_parent = top_bar.get_parent()
 
