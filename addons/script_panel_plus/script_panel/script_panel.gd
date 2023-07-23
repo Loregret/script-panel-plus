@@ -179,7 +179,7 @@ func check_for_script_change()   -> void:
 		current_script = selected_script
 		reselect_current_script()
 	else: # nothing is selected = new script
-		add_script_item_by_engine_index(selected_item, true)
+		add_script_item_by_engine_index(selected_item)
 		current_script = get_script_from_engine_list_index(selected_item)
 		sort_all_tab()
 		update_locked_scripts_position()
@@ -657,8 +657,8 @@ func sort_type_by_date_reversed(a: ScriptItem, b: ScriptItem) -> bool:
 	return false
 
 func sort_by_date(a: ScriptItem, b: ScriptItem)  -> bool:
-	var a_date := a.last_time_edited
-	var b_date := b.last_time_edited
+	var a_date := a.get("last_time_edited")
+	var b_date := b.get("last_time_edited")
 	
 	if a_date == b_date: return sort_alphabetical(a, b)
 	
@@ -1374,10 +1374,9 @@ func menu_button_update() -> void:
 			index = 2
 	
 	menu_button.get_popup().set_item_checked(index, true)
-	
 	menu_button.get_popup().set_item_disabled(4, false)
 	
-	if group_types.has(tab):
+	if group_types.has(tab) and current_sorting[tab] != MANUAL:
 		menu_button.get_popup().set_item_checked(4, group_types[tab])
 	else:
 		menu_button.get_popup().set_item_disabled(4, true)
