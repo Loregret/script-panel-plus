@@ -12,6 +12,7 @@ var engine_script_list:        ItemList
 ## new Nodes
 var script_list:     ItemList
 var method_list:     ItemList
+var vsplit:          VSplitContainer
 var error_label:     Label
 var line_label:      Label
 var script_label:    Label
@@ -102,6 +103,7 @@ class ScriptItem:
 
 func _ready() -> void:
 	## NODES
+	vsplit = $VBoxContainer/VSplitContainer
 	script_list = $VBoxContainer/VSplitContainer/ScriptList
 	method_list = $VBoxContainer/VSplitContainer/MethodList
 	popup = $VBoxContainer/VSplitContainer/ScriptList/PopupMenu
@@ -587,7 +589,6 @@ func sort_tab(tab_name: String) -> void:
 			_array.sort_custom(sort_date)
 		DATE_BACKWARDS:
 			_array.sort_custom(sort_date_rev)
-	
 
 func sort_all_tab() -> void:
 	sort_tab("all")
@@ -1137,6 +1138,7 @@ func save_last_session() -> void:
 	_save_script_arrays()
 	_save_locked_scripts()
 	_save_tabs()
+	_save_vsplit()
 	
 	file.store_var(save_data, true)
 
@@ -1191,6 +1193,9 @@ func _save_tabs() -> void:
 	for i in tab_bar.tab_count:
 		save_data["tabs"].append( tab_bar.get_tab_title(i) )
 
+func _save_vsplit() -> void:
+	save_data["vsplit_offset"] = vsplit.split_offset
+
 
 ## LOAD
 
@@ -1211,6 +1216,8 @@ func load_last_session() -> void:
 	_load_font_size()
 	_load_locked_scripts()
 	_load_current_script()
+	_load_vsplit()
+	
 	update_font_size()
 	sort_current_tab()
 
@@ -1309,6 +1316,10 @@ func _load_tabs() -> void:
 				tab_bar.move_tab(x, i)
 				if tab_bar.get_tab_title(i).to_lower() == load_data["current_tab"]:
 					tab_bar.current_tab = i
+
+func _load_vsplit() -> void:
+	if load_data.has("vsplit_offset"):
+		vsplit.split_offset = load_data["vsplit_offset"]
 
 
 ## ERRORS
