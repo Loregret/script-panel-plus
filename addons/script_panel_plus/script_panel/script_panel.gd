@@ -157,6 +157,19 @@ func update() -> void:
 	else:
 		script_list.max_columns = 1
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if event.is_pressed():
+			if event.is_command_or_control_pressed() and event.keycode == KEY_W:
+				get_viewport().set_input_as_handled()
+				
+				if script_list.item_count == 0: return
+				
+				var index := list_get_scripts_index(current_script)
+				script_list.select(index)
+				script_list.item_selected.emit(index)
+				delete_script_item(index)
+
 
 ## CHECKS
 
@@ -1396,6 +1409,7 @@ func _on_popup_action(id: int) -> void:
 	var script_index: int = popup.get_item_metadata(popup.get_item_index(id))
 	var script_item: ScriptItem = get_script_from_list_by_index(script_index)
 	if id == 0: # Close
+		if script_list.item_count == 0: return
 		script_list.item_selected.emit(script_index)
 		delete_script_item(script_index)
 	if id == 1: # Favourite
