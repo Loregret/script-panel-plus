@@ -149,6 +149,10 @@ popup/item_1/id = 1
 [node name="MethodList" type="ItemList" parent="VBoxContainer/VSplitContainer/MethodListContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/focus = SubResource("StyleBoxEmpty_06sl4")
+theme_override_styles/hovered = SubResource("StyleBoxFlat_gcjfv")
+theme_override_styles/selected = SubResource("StyleBoxFlat_as5tr")
+theme_override_styles/selected_focus = SubResource("StyleBoxFlat_1uqvt")
 
 [node name="ErrorLabel" type="Label" parent="VBoxContainer"]
 visible = false
