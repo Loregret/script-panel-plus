@@ -10,24 +10,29 @@ var engine_script_editor:      ScriptEditor
 var engine_script_list:        ItemList
 
 ## new Nodes
-var script_list:     ItemList
-var method_list:     ItemList
-var vsplit:          VSplitContainer
-var error_label:     Label
-var line_label:      Label
-var script_label:    Label
-var menu_button:     MenuButton
-var search_line:     LineEdit
-var tab_bar:         TabBar
-var popup:           PopupMenu
-var rename_bar:      BoxContainer
-var rename_bar_line: LineEdit
-var hide_button: BaseButton
-var show_button: BaseButton
+var script_list:          ItemList
+var method_list:          ItemList
+var method_search_line:   LineEdit
+var method_search_bar:    HBoxContainer
+var method_search_button: MenuButton
+var vsplit:               VSplitContainer
+var error_label:          Label
+var line_label:           Label
+var script_label:         Label
+var menu_button:          MenuButton
+var search_line:          LineEdit
+var tab_bar:              TabBar
+var popup:                PopupMenu
+var rename_bar:           BoxContainer
+var rename_bar_line:      LineEdit
+var hide_button:          BaseButton
+var show_button:          BaseButton
 
 var save_data := {}
 var load_data := {}
-const save_path := "res://addons/script_panel_plus/saves/save.dat"
+
+const old_save_path := "res://addons/script_panel_plus/saves/save.old"
+const new_save_path := "res://addons/script_panel_plus/saves/save"
 
 ## Script Arrays
 var all:     Array[ScriptItem] = []
@@ -35,6 +40,7 @@ var scripts: Array[ScriptItem] = []
 var docs:    Array[ScriptItem] = []
 var files:   Array[ScriptItem] = []
 var favs:    Array[ScriptItem] = []
+var tests:    Array[ScriptItem] = []
 
 ## Custom Data
 var errors: = []
@@ -56,6 +62,7 @@ var list_font_size_docs     := 16
 var list_font_size_files    := 16 
 var list_font_size_favs     := 16 
 var list_font_size_all      := 16 
+var list_font_size_tests      := 16 
 
 ## Sorting
 enum {
@@ -77,9 +84,10 @@ var current_sorting = {
 	"docs": DATE,
 	"files": DATE,
 	"★": DATE,
+	"tests": DATE,
 	}
 
-## Script Class in ItemList
+## Script Class
 class ScriptItem:
 	var original_text: String
 	var text: String
@@ -105,7 +113,10 @@ func _ready() -> void:
 	## NODES
 	vsplit = $VBoxContainer/VSplitContainer
 	script_list = $VBoxContainer/VSplitContainer/ScriptList
-	method_list = $VBoxContainer/VSplitContainer/MethodList
+	method_list = $VBoxContainer/VSplitContainer/MethodListContainer/MethodList
+	method_search_line = $VBoxContainer/VSplitContainer/MethodListContainer/SearchBar/SearchLine
+	method_search_bar = $VBoxContainer/VSplitContainer/MethodListContainer/SearchBar
+	method_search_button = $VBoxContainer/VSplitContainer/MethodListContainer/SearchBar/MenuButton
 	popup = $VBoxContainer/VSplitContainer/ScriptList/PopupMenu
 	tab_bar = $VBoxContainer/TabBar
 	menu_button = $VBoxContainer/SearchBar/MenuButton
@@ -119,7 +130,6 @@ func _ready() -> void:
 	show_button = $ShowButton
 	
 	## SIGNALS
-	menu_button.get_popup().id_pressed.connect(_on_menu_button_pressed)
 	popup.id_pressed.connect(_on_popup_action)
 	tab_bar.tab_changed.connect(on_tab_changed)
 	script_list.gui_input.connect(_on_list_input)
@@ -131,6 +141,9 @@ func _ready() -> void:
 	method_list.item_selected.connect(_on_method_selected)
 	show_button.pressed.connect(show_panel)
 	hide_button.pressed.connect(hide_panel)
+	menu_button.get_popup().id_pressed.connect(_on_menu_button_pressed)
+	method_search_line.text_changed.connect(_on_method_search_submited.unbind(1))
+	method_search_button.get_popup().id_pressed.connect(_on_method_search_button_pressed)
 	rename_bar.get_node("./Buttons/ButtonCancel").pressed.connect(_on_custom_name_cancel)
 	rename_bar.get_node("./Buttons/ButtonRestore").pressed.connect(_on_custom_name_restore)
 	rename_bar.get_node("./Buttons/ButtonSubmit").pressed.connect(_on_custom_name_submit)
@@ -138,7 +151,7 @@ func _ready() -> void:
 	rename_bar_line.text_changed.connect(_on_custom_name_change.unbind(1))
 	rename_bar_line.gui_input.connect(_on_rename_bar_line_input)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not is_instance_valid(plugin_reference): return
 	if not engine_script_list.is_anything_selected(): return
 	if settings.is_empty(): return
@@ -149,7 +162,6 @@ func _process(delta: float) -> void:
 	check_current_save_state()
 	check_not_saved()
 	list_update()
-	methods_list_update()
 
 func update() -> void:
 	if settings["list_multiple_columns"]:
@@ -201,6 +213,8 @@ func check_for_script_change()   -> void:
 	check_current_tab()
 	check_current_script_label()
 	check_rename_status(current_script)
+	methods_list_update()
+	
 	
 	if prev_script:
 		_on_script_change(prev_script)
@@ -271,6 +285,7 @@ func check_current_tab()          -> void:
 		return
 	if get_current_tab() == "all": return
 	if get_current_tab() == "★": return
+	if get_current_tab() == "tests": return
 	
 	if current_script.type != get_current_tab():
 		change_current_tab(current_script.type)
@@ -381,7 +396,10 @@ func _on_list_input(event: InputEvent) -> void:
 		"★":
 			list_font_size_favs = clampi(\
 			list_font_size_favs + zoom_amount, min_font_size, max_font_size)
-	
+		"tests":
+			list_font_size_tests = clampi(\
+			list_font_size_tests + zoom_amount, min_font_size, max_font_size)
+			
 	tab_was_changed_manually = true
 	update_font_size()
 
@@ -472,7 +490,7 @@ func get_line_label(script_editor: ScriptEditorBase)  -> Label:
 
 func _on_script_editor_caret_moved(script_editor: ScriptEditorBase) -> void:
 	var timer := Timer.new()
-	timer.wait_time = 3
+	timer.wait_time = 2
 	timer.autostart = true
 	script_editor.add_child(timer)
 	await timer.timeout
@@ -556,10 +574,11 @@ func update_tabs() -> void:
 	toggle_tab_visibility("docs", settings["show_docs_tab"])
 	toggle_tab_visibility("files", settings["show_files_tab"])
 	toggle_tab_visibility("★", settings["show_favourites_tab"])
+	toggle_tab_visibility("tests", settings["show_tests_tab"])
 	
 	if settings["show_tab_bar"] == false: return
 	if not settings["show_scripts_tab"] and not settings["show_docs_tab"]\
-	and not settings["show_files_tab"] and not settings["show_favourites_tab"]:
+	and not settings["show_files_tab"] and not settings["show_favourites_tab"] and not settings["show_tests_tab"]:
 		tab_bar.visible = false
 	else:
 		tab_bar.visible = true
@@ -609,6 +628,7 @@ func sort_all_tab() -> void:
 	sort_tab("docs")
 	sort_tab("files")
 	sort_tab("★")
+	sort_tab("tests")
 
 
 ## SORTING ALGORITHMS
@@ -785,6 +805,8 @@ func update_font_size() -> void:
 			script_list.add_theme_font_size_override("font_size", list_font_size_favs)
 		"all":
 			script_list.add_theme_font_size_override("font_size", list_font_size_all)
+		"tests":
+			script_list.add_theme_font_size_override("font_size", list_font_size_all)
 	
 	# ItemList needs to clear() for adjusting items text-width
 	script_list.clear()
@@ -797,6 +819,8 @@ func get_current_font_size() -> int:
 		"docs": return list_font_size_docs
 		"files": return list_font_size_files
 		"★": return list_font_size_favs
+		"tests": return list_font_size_tests
+	
 	return -1
 
 
@@ -840,7 +864,7 @@ func add_script_item_by_engine_index(index: int, push_front := false) -> void:
 		add_script_item(text, path, type, push_front)
 
 func add_script_item(text: String, path: String, type: String, \
-push_front := false, add_to_favourite := false) -> ScriptItem:
+push_front := false, add_to_favourite := false, add_to_tests := false) -> ScriptItem:
 	var script_array := get_script_array(type)
 	var item := ScriptItem.new(text.replace("(*)", ""), path, type)
 	script_update_time(item)
@@ -849,10 +873,13 @@ push_front := false, add_to_favourite := false) -> ScriptItem:
 		script_array.push_front(item)
 		all.push_front(item)
 		if add_to_favourite: favs.push_front(item)
+		if add_to_tests: tests.push_front(item)
 	else:
 		script_array.push_back(item)
 		all.push_back(item)
 		if add_to_favourite: favs.push_back(item)
+		if add_to_tests: tests.push_front(item)
+		
 	return item
 
 func delete_script_item(index: int) -> void:
@@ -871,6 +898,9 @@ func delete_script_item(index: int) -> void:
 	if favs.has(script_item):
 			favs.erase(script_item)
 	
+	if tests.has(script_item):
+			tests.erase(script_item)
+	
 	remove_script_lock(script_item)
 	
 	var _top_bar:Control = plugin_reference.top_bar
@@ -878,11 +908,20 @@ func delete_script_item(index: int) -> void:
 	
 	all.erase(script_item)
 
-func move_script_item(script_item: ScriptItem, script_array: Array[ScriptItem],\
-index: int) -> void:
-	if script_array[index] != script_item:
-		script_array.erase(script_item)
-		script_array.insert(index, script_item)
+func move_script_item(script_item: ScriptItem, script_array: Array[ScriptItem], index: int) -> void:
+	if not script_array or not script_item: return
+	
+	if not script_array.has(script_item): return
+	
+	if script_array.is_empty(): return
+	
+	var curr_script := script_array[mini(index, script_array.size() - 1)] as ScriptItem
+	
+	if curr_script == script_item: return
+	
+	script_array.remove_at( script_array.find(script_item, 0) )
+	
+	script_array[mini(index, script_array.size() - 1)] = script_item as ScriptItem
 
 func update_all_scripts() -> void:
 	var script_count:int = engine_script_list.item_count
@@ -917,7 +956,9 @@ func get_script_from_list_by_index(index: int) -> ScriptItem:
 	return script_list.get_item_metadata(index)
 
 func get_script_by_path(path: String) -> ScriptItem:
-	for i in all: if path in i.path:return i
+	for i in all: 
+		if path in i.path: 
+			return i
 	return null
 
 func get_current_script() -> ScriptItem:
@@ -939,6 +980,7 @@ func get_script_array(tab_name: String) -> Array[ScriptItem]:
 		"files": array_ref = files
 		"★":   array_ref = favs
 		"favs": array_ref = favs
+		"tests": array_ref = tests
 	
 	return array_ref
 
@@ -961,8 +1003,10 @@ func list_update() -> void:
 	
 	for object in get_current_script_array():
 		if search_line.text.is_empty() or \
-		search_line.text.is_subsequence_ofn(object.text):
+		search_line.text.contains(object.text):
 			list_add_item(object)
+			
+			## Tooltip
 			script_list.set_item_tooltip(list_get_scripts_index(object), \
 			object.path + newline + "---" + newline + object.last_time_edited)
 	
@@ -1022,8 +1066,11 @@ func list_add_item(script_item: ScriptItem) -> void:
 				text = text.get_slice(".", 0)
 			if settings["convert_scripts_to_pascal_case"]: 
 				text = text.to_pascal_case()
-			if settings["script_icons"]: 
-				text = "📝 " + text
+			if settings["script_icons"]:
+				if tests.has(script_item):
+					text = "🧪 " + text
+				else:
+					text = "📝 " + text
 			elif settings["script_decorators"]: 
 				text = "▪ " + text
 		"docs":
@@ -1070,6 +1117,10 @@ func list_add_item(script_item: ScriptItem) -> void:
 			else:
 				text += settings["favourite_indicator"]
 	
+#	if tests.has(script_item) and scripts.has(script_item):
+#		if current_tab == "scripts":
+#			return
+	
 	var id := script_list.add_item(text)
 	script_list.set_item_metadata(id, script_item)
 	
@@ -1114,28 +1165,62 @@ func is_list_showing_script(script: ScriptItem) -> bool:
 ## METHOD-LIST
 
 func methods_list_update() -> void:
+	if not current_script: return
+	
 	var engine_method_list := plugin_reference.engine_method_list as ItemList
 	var engine_docs_h_list := plugin_reference.engine_docs_headers_list as ItemList
+	
 	method_list.clear()
-	method_list.visible = false
 	
-	if current_script.type == "docs":
-		if not settings["show_docs_headers_list"]: return
+	if current_script.type == "docs" and settings["show_docs_headers_list"]:
+		
+		method_search_bar.visible = false
 		method_list.visible = true
+		
 		for i in engine_docs_h_list.item_count:
-			method_list.add_item(engine_docs_h_list.get_item_text(i))
+			var text := str("▪️ ", engine_docs_h_list.get_item_text(i))
+			var index := method_list.add_item(text)
+			method_list.set_item_metadata(index, index)
 	
-	elif current_script.type == "scripts":
-		if not settings["show_method_list"]: return
+	elif current_script.type == "scripts" and settings["show_method_list"]:
+		
 		method_list.visible = true
+		method_search_bar.visible = settings["show_method_search_bar"] as bool
+		
 		for i in engine_method_list.item_count:
-			method_list.add_item(engine_method_list.get_item_text(i))
+			var item_text := engine_method_list.get_item_text(i)
+			var search_text :=  method_search_line.text
+			
+			if search_text.is_empty() or item_text.contains(search_text):
+				var text := str("▫️ ", item_text)
+				var index := method_list.add_item(text)
+				method_list.set_item_metadata(index, index)
+	
+	else:
+		method_list.visible = false
+		method_search_bar.visible = false
+	
+	if method_search_button.get_popup().is_item_checked(1):
+		method_list.sort_items_by_text()
+
+func _on_method_search_submited() -> void:
+	methods_list_update()
 
 func _on_method_selected(idx: int) -> void:
+	var index := method_list.get_item_metadata(idx)
+	
 	if current_script.type == "docs":
-		plugin_reference.engine_docs_headers_list.item_selected.emit(idx)
+		plugin_reference.engine_docs_headers_list.item_selected.emit(index)
 	if current_script.type == "scripts":
-		plugin_reference.engine_method_list.item_selected.emit(idx)
+		plugin_reference.engine_method_list.item_selected.emit(index)
+
+func _on_method_search_button_pressed(id: int) -> void:
+	var popup := method_search_button.get_popup()
+	for i in popup.item_count:
+		popup.set_item_checked(i, false)
+	
+	popup.set_item_checked(popup.get_item_index(id), true)
+	methods_list_update()
 
 
 ## SAVE
@@ -1143,7 +1228,7 @@ func _on_method_selected(idx: int) -> void:
 func save_last_session() -> void:
 	if not settings["save_session"]: return
 	
-	var file = FileAccess.open(save_path, FileAccess.WRITE)
+	var file = FileAccess.open(new_save_path, FileAccess.WRITE)
 	
 	_save_sorting()
 	_save_font_size()
@@ -1152,7 +1237,13 @@ func save_last_session() -> void:
 	_save_locked_scripts()
 	_save_tabs()
 	_save_vsplit()
+	_save_plugin_version()
 	
+	_save_backup()
+	file.store_var(save_data, true)
+
+func _save_backup() -> void:
+	var file = FileAccess.open(old_save_path, FileAccess.WRITE)
 	file.store_var(save_data, true)
 
 func _save_font_size() -> void:
@@ -1161,6 +1252,7 @@ func _save_font_size() -> void:
 	save_data["list_font_size_files"] = list_font_size_files
 	save_data["list_font_size_favs"] = list_font_size_favs
 	save_data["list_font_size_all"] = list_font_size_all
+	save_data["list_font_size_tests"] = list_font_size_tests
 
 func _save_sorting() -> void:
 	save_data["current_sorting"] = current_sorting
@@ -1172,32 +1264,51 @@ func _save_script_arrays() -> void:
 	save_data["docs"] = []
 	save_data["files"] = []
 	save_data["favs"] = []
+	save_data["tests"] = []
 	
-	for i in all:
-		save_data["all"].append(_script_item_to_array(i))
-	for i in scripts:
-		save_data["scripts"].append(_script_item_to_array(i))
-	for i in docs:
-		save_data["docs"].append(_script_item_to_array(i))
-	for i in files:
-		save_data["files"].append(_script_item_to_array(i))
-	for i in favs:
-		save_data["favs"].append(_script_item_to_array(i))
+	for script in all:
+		var saved_script := get_script_item_as_dict(script)
+		save_data["all"].append(saved_script)
+	for script in scripts:
+		var saved_script := get_script_item_as_dict(script)
+		save_data["scripts"].append(saved_script)
+	for script in docs:
+		var saved_script := get_script_item_as_dict(script)
+		save_data["docs"].append(saved_script)
+	for script in files:
+		var saved_script := get_script_item_as_dict(script)
+		save_data["files"].append(saved_script)
+	for script in favs:
+		var saved_script := get_script_item_as_dict(script)
+		save_data["favs"].append(saved_script)
+	for script in tests:
+		var saved_script := get_script_item_as_dict(script)
+		save_data["tests"].append(saved_script)
 
 func _save_locked_scripts() -> void:
 	save_data["locked_scripts"] = []
+	
 	for _tab in locked_scripts.keys():
 		for x in locked_scripts[_tab]:
+			
 			var _script: ScriptItem = x[0]
 			var index: int = x[1]
-			save_data["locked_scripts"].append([_script_item_to_array(_script), _tab, index])
+			
+			save_data["locked_scripts"].append([get_script_item_as_dict(_script), _tab, index])
 
-func _script_item_to_array(script_item: ScriptItem) -> Array:
-	return [script_item.original_text, script_item.text,\
-		 script_item.path, script_item.type, script_item.last_time_edited]
+func get_script_item_as_dict(script_item: ScriptItem) -> Dictionary:
+	var result := {
+		"original_text": script_item.original_text,
+		"text": script_item.text,
+		"path": script_item.path,
+		"type": script_item.type,
+		"last_time_edited": script_item.last_time_edited,
+	}
+	return result
 
 func _save_current_script() -> void:
-	save_data["current_script"] = get_current_script().path
+	if current_script:
+		save_data["current_script"] = current_script.path
 
 func _save_tabs() -> void:
 	save_data["tabs"] = []
@@ -1209,13 +1320,33 @@ func _save_tabs() -> void:
 func _save_vsplit() -> void:
 	save_data["vsplit_offset"] = vsplit.split_offset
 
+func _save_plugin_version() -> void:
+	save_data["version"] = get_current_plugin_version()
+
+func get_current_plugin_version() -> String:
+	var result := ''
+	const cfg_path := "res://addons/script_panel_plus/plugin.cfg"
+	
+	var config := ConfigFile.new()
+	var err := config.load(cfg_path)
+	
+	if err: push_error(err)
+	
+	for section in config.get_sections():
+		for key in config.get_section_keys(section):
+			if key == 'version':
+				var version := config.get_value(section, key)
+				result = version
+	
+	return result
+
 
 ## LOAD
 
 func load_last_session() -> void:
 	if not settings["save_session"]: return
 	
-	var file = FileAccess.open(save_path, FileAccess.READ)
+	var file = FileAccess.open(new_save_path, FileAccess.READ)
 	if file: 
 		load_data = file.get_var()
 	else:
@@ -1223,8 +1354,11 @@ func load_last_session() -> void:
 	
 	if load_data.is_empty(): return
 	
+	if _is_plugin_updated(): ## deletes save file, if it has outdated version
+		return
+	
 	_load_tabs()
-	_load_script_arrays()
+	_load_all_scripts()
 	_load_sorting()
 	_load_font_size()
 	_load_locked_scripts()
@@ -1240,12 +1374,14 @@ func _load_font_size() -> void:
 	if not load_data.has("list_font_size_files"): return
 	if not load_data.has("list_font_size_favs"): return
 	if not load_data.has("list_font_size_all"): return
+	if not load_data.has("list_font_size_tests"): return
 	
 	list_font_size_scripts = load_data["list_font_size_scripts"]
 	list_font_size_docs = load_data["list_font_size_docs"]
 	list_font_size_files = load_data["list_font_size_files"]
 	list_font_size_favs = load_data["list_font_size_favs"]
 	list_font_size_all = load_data["list_font_size_all"]
+	list_font_size_all = load_data["list_font_size_tests"]
 
 func _load_sorting() -> void:
 	if not load_data.has("group_types"): return
@@ -1254,60 +1390,70 @@ func _load_sorting() -> void:
 	group_types = load_data["group_types"]
 	current_sorting = load_data["current_sorting"]
 
-func _load_script_arrays() -> void:
+func _load_all_scripts() -> void:
 	if not load_data.has("all"): return
 	if not load_data.has("scripts"): return
 	if not load_data.has("docs"): return
 	if not load_data.has("files"): return
 	if not load_data.has("favs"): return
+	if not load_data.has("tests"): return
 	
-	_load_custom_array(load_data["all"], "all")
-	_load_custom_array(load_data["scripts"], "scripts")
-	_load_custom_array(load_data["docs"], "docs")
-	_load_custom_array(load_data["files"], "files")
-	_load_custom_array(load_data["favs"], "favs")
+#	prints(load_data)
+	
+	_load_script_array(load_data["all"],     "all")
+	_load_script_array(load_data["scripts"], "scripts")
+	_load_script_array(load_data["docs"],    "docs")
+	_load_script_array(load_data["files"],   "files")
+	_load_script_array(load_data["favs"],    "favs")
+	_load_script_array(load_data["tests"],   "tests")
+
+func _load_script_array(saved_script_array: Array, array_name: String) -> void:
+	var current_array := get_script_array(array_name)
+	current_array.clear()
+	
+	## SCRIPT ITEM
+	for i in range(0, saved_script_array.size() ):
+		var current_saved_script: Dictionary = saved_script_array[i]
+		var extracted_script := get_script_item_from_dict(current_saved_script)
+		
+		if not current_array.has(extracted_script):
+			current_array.append(extracted_script)
+	
+	## SCRIPT ITEM'S POSITION
+	for i in range(0, saved_script_array.size() ):
+		var current_saved_script: Dictionary = saved_script_array[i]
+		var extracted_script := get_script_item_from_dict(current_saved_script)
+		var _current_script := get_script_by_path(extracted_script.path)
+		move_script_item(_current_script, current_array, i)
+
+func get_script_item_from_dict(dict: Dictionary) -> ScriptItem:
+	var _orig_text: String = dict.get("original_text")
+	var _text:String = dict.get("text")
+	var _path:String = dict.get("path")
+	var _type:String = dict.get("type")
+	var _time:String = dict.get("last_time_edited")
+	
+	var script := get_script_by_path(_path)
+	
+	if not script:
+		script = add_script_item(_text, _path, _type, false)
+	
+	script.text = _text
+	script.original_text = _orig_text
+	script.path = _path
+	script.type = _type
+	script.last_time_edited = _time
+	
+	return script
 
 func _load_locked_scripts() -> void:
 	var _array := load_data["locked_scripts"] as Array
+	
 	for i in _array:
-		var new_script := _load_script_item(i[0], i[1])
-		toggle_script_lock(new_script, i[1])
-
-func _load_custom_array(saved_array: Array, array_name: String) -> void:
-	for i in range(0, saved_array.size() ):
-		_load_script_item(saved_array[i], array_name)
-	for x in range(0, saved_array.size()):
-		var _array := get_script_array(array_name)
-		move_script_item(get_script_by_path(saved_array[x][2]), _array, x)
-
-func _load_script_item(saved_script: Array, script_array_name: String) -> ScriptItem:
-	var _orig_text: String = saved_script[0]
-	var _text:String = saved_script[1]
-	var _path:String = saved_script[2]
-	var _type:String = saved_script[3]
-	var _time:String = saved_script[4]
-	
-	var script := get_script_by_path(_path)
-	var script_array := get_script_array(script_array_name)
-	var is_favs := script_array_name == "favs"
-	
-	
-	if script:
-		script.text = _text
-		script.original_text = _orig_text
-		script.path = _path
-		script.type = _type
-		script.last_time_edited = _time
-		
-		if is_favs and not favs.has(script): favs.append(script)
-		
-		return script
-	else:
-		var _script := add_script_item(_text, _path, _type, false, is_favs)
-		_script.original_text = _orig_text
-		_script.last_time_edited = _time
-		
-		return _script
+		var saved_script: Dictionary = i[0]
+		var script_array_name: String = i[1]
+		var new_script := get_script_item_from_dict(saved_script)
+		toggle_script_lock(new_script, script_array_name)
 
 func _load_current_script() -> void:
 	if not load_data.has("current_script"): return
@@ -1333,6 +1479,16 @@ func _load_tabs() -> void:
 func _load_vsplit() -> void:
 	if load_data.has("vsplit_offset"):
 		vsplit.split_offset = load_data["vsplit_offset"]
+
+func _is_plugin_updated() -> bool:
+	if not load_data.has("version"): return false
+	
+	if load_data["version"] != get_current_plugin_version():
+		print_rich("[color=cadetblue][b]Script Panel Plus:[/b][/color] plugin was updated to version %s. Previous save session was deleted to avoid incompatibility errors." % get_current_plugin_version())
+		OS.move_to_trash( ProjectSettings.globalize_path(new_save_path) )
+		return true
+	
+	return false
 
 
 ## ERRORS
@@ -1399,28 +1555,57 @@ func menu_button_update() -> void:
 ## POPUP
 
 func _call_popup(item_index: int) -> void:
-		popup.popup(Rect2i(get_global_mouse_position(), Vector2i(173, 62)))
+		var script_item: ScriptItem = get_script_from_list_by_index(item_index)
+		popup.popup(Rect2i(get_global_mouse_position(), Vector2i(100, 0)))
+		
+		popup.clear()
+		
+		popup.add_item("Close Script ", 0)
 		popup.set_item_metadata(popup.get_item_index(0), item_index) # CLOSE
-		popup.set_item_metadata(popup.get_item_index(1), item_index) # FAVOURITE
-		popup.set_item_metadata(popup.get_item_index(2), item_index) # LOCK
-		popup.set_item_metadata(popup.get_item_index(3), item_index) # NAME
+		
+#		popup.add_item("", 100)
+#		popup.set_item_as_separator(popup.get_item_index(100), true)
+		
+		if settings["show_custom_name_popup"]:
+			const id := 1
+			popup.add_item("Change Name 🏷️", id)
+			popup.set_item_metadata(popup.get_item_index(id), item_index) # NAME
+			popup.set_item_tooltip(popup.get_item_index(id), \
+			"You can setup a custom name to the script item in this list. 
+			It doesn't affect script's name in the filesystem.")
+		
+		if settings["show_favourites_popup"]:
+			const id := 2
+			popup.add_item("Add to Favourites ⭐", id)
+			popup.set_item_metadata(popup.get_item_index(id), item_index) # FAVOURITE
+			popup.set_item_tooltip(popup.get_item_index(id), \
+			"Add this script to the Favourites tab.")
+	
+		if settings["show_lock_popup"]:
+			const id := 3
+			popup.add_item("Toggle Lock 🔒", id)
+			popup.set_item_metadata(popup.get_item_index(id), item_index) # LOCK
+			popup.set_item_tooltip(popup.get_item_index(id), \
+			"Lock position of the script, so the sorting algorithm will ignore it.")
+
+	
+		if settings["show_tests_popup"]:
+			const id := 4
+			popup.add_item("Add to Tests 🧪", id)
+			popup.set_item_metadata(popup.get_item_index(id), item_index) # TEST
+			popup.set_item_disabled(popup.get_item_index(id), script_item.type != "scripts")
+			popup.set_item_tooltip(popup.get_item_index(id), "Add this script to the Tests tab.")
 
 func _on_popup_action(id: int) -> void:
 	var script_index: int = popup.get_item_metadata(popup.get_item_index(id))
 	var script_item: ScriptItem = get_script_from_list_by_index(script_index)
-	if id == 0: # Close
+	
+	if id == 0: # CLOSE
 		if script_list.item_count == 0: return
 		script_list.item_selected.emit(script_index)
 		delete_script_item(script_index)
-	if id == 1: # Favourite
-		if favs.has(script_item):
-			favs.erase(script_item)
-		else:
-			favs.append(script_item)
-			sort_tab("★")
-	if id == 2: # Lock
-		toggle_script_lock(script_item, get_current_tab())
-	if id == 3: # Custom Name
+	
+	if id == 1: # NAME
 		if renamed_script:
 			if renamed_script == script_item:
 				renamed_script = null
@@ -1431,13 +1616,35 @@ func _on_popup_action(id: int) -> void:
 			renamed_script = script_item
 			script_list.item_selected.emit(script_index)
 		check_rename_status(script_item)
+	
+	if id == 2: # FAVORITE
+		if favs.has(script_item):
+			favs.erase(script_item)
+		else:
+			favs.append(script_item)
+			sort_tab("★")
+	
+	if id == 3: # LOCK
+		toggle_script_lock(script_item, get_current_tab())
+	
+	if id == 4: # TEST
+		if tests.has(script_item):
+			tests.erase(script_item)
+		else:
+			tests.append(script_item)
+			sort_tab("tests")
 
 
 ## CUSTOM NAME
 
 func rename_bar_show(script_item: ScriptItem) -> void:
 		rename_bar.visible = true
-		rename_bar_line.text = script_item.text
+		
+		if not settings["show_file_formats"]: 
+			rename_bar_line.text = script_item.text.get_slice(".", 0)
+		else:
+			rename_bar_line.text = script_item.text
+		
 		rename_bar_line.grab_focus()
 		rename_bar_line.select_all()
 

@@ -48,12 +48,13 @@ layout_mode = 2
 max_tab_width = 100
 drag_to_rearrange_enabled = true
 tabs_rearrange_group = 0
-tab_count = 5
+tab_count = 6
 tab_0/title = "All"
 tab_1/title = "Scripts"
 tab_2/title = "Docs"
 tab_3/title = "Files"
-tab_4/title = "★"
+tab_4/title = "Tests"
+tab_5/title = "★"
 
 [node name="SearchBar" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -114,22 +115,38 @@ same_column_width = true
 script = ExtResource("2_g67jx")
 
 [node name="PopupMenu" type="PopupMenu" parent="VBoxContainer/VSplitContainer/ScriptList"]
-size = Vector2i(173, 120)
+size = Vector2i(100, 45)
 allow_search = false
-item_count = 5
-item_0/text = "Add to Favorites ★"
-item_0/id = 1
-item_1/text = "Lock in place 🔒"
-item_1/id = 2
-item_2/text = "Set custom name ♣️"
-item_2/id = 3
-item_3/text = ""
-item_3/id = 99
-item_3/separator = true
-item_4/text = "Close Script"
-item_4/id = 0
 
-[node name="MethodList" type="ItemList" parent="VBoxContainer/VSplitContainer"]
+[node name="MethodListContainer" type="VBoxContainer" parent="VBoxContainer/VSplitContainer"]
+layout_mode = 2
+
+[node name="SearchBar" type="HBoxContainer" parent="VBoxContainer/VSplitContainer/MethodListContainer"]
+layout_mode = 2
+
+[node name="SearchLine" type="LineEdit" parent="VBoxContainer/VSplitContainer/MethodListContainer/SearchBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Search"
+clear_button_enabled = true
+select_all_on_focus = true
+
+[node name="MenuButton" type="MenuButton" parent="VBoxContainer/VSplitContainer/MethodListContainer/SearchBar"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Current Sorting"
+text = "..."
+flat = false
+item_count = 2
+popup/item_0/text = "No Sorting"
+popup/item_0/checkable = 2
+popup/item_0/checked = true
+popup/item_0/id = 0
+popup/item_1/text = "Sort: Name"
+popup/item_1/checkable = 2
+popup/item_1/id = 1
+
+[node name="MethodList" type="ItemList" parent="VBoxContainer/VSplitContainer/MethodListContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 

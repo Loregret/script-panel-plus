@@ -14,6 +14,7 @@ var engine_script_editor:        ScriptEditor
 var engine_script_vbox:          VSplitContainer
 var engine_script_list:          ItemList
 var engine_method_list:          ItemList
+var engine_method_searchline:    LineEdit
 var engine_docs_headers_list:     ItemList
 var engine_screen_select_button: Control
 
@@ -37,6 +38,7 @@ func _enter_tree() -> void:
 	script_panel.current_script_changed.connect(check_current_bottom_bar_visibility)
 	script_panel.load_last_session()
 	script_panel.update_tabs()
+	script_panel.set_process(true)
 
 func _exit_tree() -> void:
 	hide_screen_select_button()
@@ -63,7 +65,6 @@ func update() -> void:
 	check_search_bar_visibility()
 	
 	script_panel.update()
-
 
 
 ## CONFIG
@@ -152,7 +153,7 @@ func check_current_bottom_bar_visibility() -> void:
 
 func check_search_bar_visibility() -> void:
 	var search_bar := script_panel.search_line.get_parent() as Control
-	search_bar.visible = settings["show_search_line"]
+	search_bar.visible = settings["show_script_search_bar"]
 
 func hide_top_bar() -> void:
 	if not top_bar: return
@@ -261,6 +262,9 @@ func load_engine_nodes() -> void:
 	engine_script_list = engine_script_editor.get_child(0).get_child(1)\
 	.get_child(0).get_child(0).get_child(1)
 	
+	engine_method_searchline = engine_script_vbox.get_child(1).find_children("*", "LineEdit", true, false)[0] as LineEdit
+	engine_method_searchline.clear()
+	
 	engine_method_list = engine_script_vbox.get_child(1).get_child(-2)
 	engine_docs_headers_list = engine_script_vbox.get_child(1).get_child(-1)
 	
@@ -273,6 +277,7 @@ func load_engine_nodes() -> void:
 func create_script_panel() -> void:
 	script_panel = scene.instantiate()
 	script_panel.plugin_reference = self
+	script_panel.set_process(false)
 	upload_engine_nodes_to_script_panel()
 	
 	engine_script_editor.get_child(0).get_child(1).add_child(script_panel)
