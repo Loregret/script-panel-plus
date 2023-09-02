@@ -167,6 +167,7 @@ func _process(_delta: float) -> void:
 	list_update()
 
 func update() -> void:
+	zen_button.visible = settings["show_distraction_free_button"]
 	if settings["list_multiple_columns"]:
 		script_list.max_columns = 0
 	else:
