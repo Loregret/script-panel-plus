@@ -103,6 +103,7 @@ popup/item_4/id = 4
 [node name="VSplitContainer" type="VSplitContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+split_offset = -200
 
 [node name="ScriptList" type="ItemList" parent="VBoxContainer/VSplitContainer"]
 layout_mode = 2

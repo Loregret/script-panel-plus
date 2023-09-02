@@ -1347,7 +1347,8 @@ func get_current_plugin_version() -> String:
 ## LOAD
 
 func load_last_session() -> void:
-	if not settings["save_session"]: return
+	if not settings["save_session"]:
+		return
 	
 	var file = FileAccess.open(new_save_path, FileAccess.READ)
 	if file: 

@@ -284,8 +284,8 @@ func create_script_panel() -> void:
 	engine_script_editor.get_child(0).get_child(1).add_child(script_panel)
 	engine_script_editor.get_child(0).get_child(1).move_child(script_panel, 0)
 	
-	script_panel.update_all_scripts()
 	script_panel.update_script_editor_list()
+	script_panel.update_all_scripts()
 
 func upload_engine_nodes_to_script_panel() -> void:
 	script_panel.engine_editor_interface = engine_editor_interface
