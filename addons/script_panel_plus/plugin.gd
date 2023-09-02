@@ -58,6 +58,7 @@ func update() -> void:
 	hide_engine_script_vbox()
 	script_panel.toggle_hide_button()
 	script_panel.update_tabs()
+	script_panel.methods_list_update()
 	
 	check_top_bar_visibility()
 	check_current_bottom_bar_visibility()
