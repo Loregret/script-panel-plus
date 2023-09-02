@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://ln8u12ni037b"]
+[gd_scene load_steps=13 format=3 uid="uid://ln8u12ni037b"]
 
 [ext_resource type="Script" path="res://addons/script_panel_plus/script_panel/script_panel.gd" id="1_b1kur"]
 [ext_resource type="Script" path="res://addons/script_panel_plus/script_panel/script_list.gd" id="2_g67jx"]
@@ -25,6 +25,14 @@ shadow_color = Color(0, 0, 0, 0.14902)
 [sub_resource type="LabelSettings" id="LabelSettings_n74ok"]
 font_size = 11
 font_color = Color(1, 1, 1, 0.564706)
+
+[sub_resource type="LabelSettings" id="LabelSettings_1w553"]
+font_size = 13
+font_color = Color(1, 1, 1, 0.564706)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kaxoe"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pnhwh"]
 
 [node name="ScriptPanel" type="HBoxContainer"]
 clip_contents = true
@@ -200,6 +208,7 @@ text = "Submit"
 
 [node name="InfoPanel" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 0
 
 [node name="LineNum" type="Label" parent="VBoxContainer/InfoPanel"]
 layout_mode = 2
@@ -210,23 +219,39 @@ vertical_alignment = 2
 [node name="ScriptName" type="Label" parent="VBoxContainer/InfoPanel"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 0
 text = "Script Name"
-label_settings = SubResource("LabelSettings_n74ok")
-horizontal_alignment = 2
+label_settings = SubResource("LabelSettings_1w553")
+horizontal_alignment = 1
 vertical_alignment = 2
 clip_text = true
 text_overrun_behavior = 3
 
 [node name="HideButton" type="Button" parent="VBoxContainer/InfoPanel"]
+clip_contents = true
 layout_mode = 2
-size_flags_horizontal = 8
+size_flags_horizontal = 4
 size_flags_vertical = 4
 tooltip_text = "Hide Panel"
-theme_override_colors/font_hover_color = Color(0, 0, 0, 0.215686)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0.196078)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_kaxoe")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_pnhwh")
 text = "<"
 flat = true
-alignment = 2
+
+[node name="ZenButton" type="Button" parent="VBoxContainer/InfoPanel"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+tooltip_text = "Distraction Free Mode"
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0.196078)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_kaxoe")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_pnhwh")
+text = "#"
+flat = true
 
 [node name="ShowButton" type="Button" parent="."]
 visible = false

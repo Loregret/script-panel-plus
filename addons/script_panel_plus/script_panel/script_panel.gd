@@ -27,6 +27,7 @@ var rename_bar:           BoxContainer
 var rename_bar_line:      LineEdit
 var hide_button:          BaseButton
 var show_button:          BaseButton
+var zen_button:           BaseButton
 
 var save_data := {}
 var load_data := {}
@@ -126,6 +127,7 @@ func _ready() -> void:
 	search_line = $VBoxContainer/SearchBar/SearchLine
 	rename_bar = $VBoxContainer/RenameBar
 	rename_bar_line = $VBoxContainer/RenameBar/LineEdit
+	zen_button = $VBoxContainer/InfoPanel/ZenButton
 	hide_button = $VBoxContainer/InfoPanel/HideButton
 	show_button = $ShowButton
 	
@@ -141,6 +143,7 @@ func _ready() -> void:
 	method_list.item_selected.connect(_on_method_selected)
 	show_button.pressed.connect(show_panel)
 	hide_button.pressed.connect(hide_panel)
+	zen_button.pressed.connect(zen_mode)
 	menu_button.get_popup().id_pressed.connect(_on_menu_button_pressed)
 	method_search_line.text_changed.connect(_on_method_search_submited.unbind(1))
 	method_search_button.get_popup().id_pressed.connect(_on_method_search_button_pressed)
@@ -1563,8 +1566,8 @@ func _call_popup(item_index: int) -> void:
 		popup.add_item("Close Script ", 0)
 		popup.set_item_metadata(popup.get_item_index(0), item_index) # CLOSE
 		
-#		popup.add_item("", 100)
-#		popup.set_item_as_separator(popup.get_item_index(100), true)
+		#popup.add_item("", 100)
+		#popup.set_item_as_separator(popup.get_item_index(100), true)
 		
 		if settings["show_custom_name_popup"]:
 			const id := 1
@@ -1671,6 +1674,10 @@ func _on_custom_name_cancel() -> void:
 
 
 ## SHOW-HIDE SCRIPT PANEL
+
+func zen_mode() -> void:
+	var editor_interface := plugin_reference.get_editor_interface()
+	editor_interface.distraction_free_mode = not editor_interface.distraction_free_mode
 
 func toggle_hide_button() -> void:
 	if settings["show_hide_panel_button"]:
