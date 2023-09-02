@@ -1194,7 +1194,7 @@ func methods_list_update() -> void:
 			if search_text.is_empty() or item_text.contains(search_text):
 				var text := str("▫️ ", item_text)
 				var index := method_list.add_item(text)
-				method_list.set_item_metadata(index, index)
+				method_list.set_item_metadata(index, i)
 	
 	else:
 		method_list.visible = false
@@ -1574,19 +1574,21 @@ func _call_popup(item_index: int) -> void:
 			"You can setup a custom name to the script item in this list. 
 			It doesn't affect script's name in the filesystem.")
 		
-		if settings["show_favourites_popup"]:
-			const id := 2
-			popup.add_item("Add to Favourites ⭐", id)
-			popup.set_item_metadata(popup.get_item_index(id), item_index) # FAVOURITE
-			popup.set_item_tooltip(popup.get_item_index(id), \
-			"Add this script to the Favourites tab.")
 	
 		if settings["show_lock_popup"]:
-			const id := 3
+			const id := 2
 			popup.add_item("Toggle Lock 🔒", id)
 			popup.set_item_metadata(popup.get_item_index(id), item_index) # LOCK
 			popup.set_item_tooltip(popup.get_item_index(id), \
 			"Lock position of the script, so the sorting algorithm will ignore it.")
+
+		
+		if settings["show_favourites_popup"]:
+			const id := 3
+			popup.add_item("Add to Favourites ⭐", id)
+			popup.set_item_metadata(popup.get_item_index(id), item_index) # FAVOURITE
+			popup.set_item_tooltip(popup.get_item_index(id), \
+			"Add this script to the Favourites tab.")
 
 	
 		if settings["show_tests_popup"]:
@@ -1617,15 +1619,15 @@ func _on_popup_action(id: int) -> void:
 			script_list.item_selected.emit(script_index)
 		check_rename_status(script_item)
 	
-	if id == 2: # FAVORITE
+	if id == 2: # LOCK
+		toggle_script_lock(script_item, get_current_tab())
+	
+	if id == 3: # FAVORITE
 		if favs.has(script_item):
 			favs.erase(script_item)
 		else:
 			favs.append(script_item)
 			sort_tab("★")
-	
-	if id == 3: # LOCK
-		toggle_script_lock(script_item, get_current_tab())
 	
 	if id == 4: # TEST
 		if tests.has(script_item):
