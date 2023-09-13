@@ -1468,7 +1468,7 @@ func _load_current_script() -> void:
 	for i in engine_script_list.item_count:
 		if engine_script_list.get_item_tooltip(i) == _script.path:
 			engine_script_list.select(i)
-			engine_script_list.item_selected.emit(i)
+#			engine_script_list.item_selected.emit(i) ## Issue with taking selection from Editor Layout to Script Layout
 
 func _load_tabs() -> void:
 	if not load_data.has("tabs"): return
