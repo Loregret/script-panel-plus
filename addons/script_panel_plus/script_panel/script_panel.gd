@@ -1386,7 +1386,7 @@ func _load_font_size() -> void:
 	list_font_size_files = load_data["list_font_size_files"]
 	list_font_size_favs = load_data["list_font_size_favs"]
 	list_font_size_all = load_data["list_font_size_all"]
-	list_font_size_all = load_data["list_font_size_tests"]
+	list_font_size_tests = load_data["list_font_size_tests"]
 
 func _load_sorting() -> void:
 	if not load_data.has("group_types"): return
