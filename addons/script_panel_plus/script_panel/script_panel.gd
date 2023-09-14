@@ -107,6 +107,9 @@ class ScriptItem:
 	func _to_string() -> String:
 		return path
 
+var scripts_icon := preload("res://addons/script_panel_plus/script_panel/icons/scripts.svg")
+var docs_icon := preload("res://addons/script_panel_plus/script_panel/icons/docs.svg")
+var files_icon := preload("res://addons/script_panel_plus/script_panel/icons/files.svg")
 
 ## MAIN
 
@@ -1070,6 +1073,7 @@ func list_check_settings() -> void:
 func list_add_item(script_item: ScriptItem) -> void:
 	var text := script_item.text
 	var current_tab := get_current_tab()
+	var icon: Texture2D
 	
 	match script_item.type:
 		"scripts":
@@ -1077,63 +1081,66 @@ func list_add_item(script_item: ScriptItem) -> void:
 				text = text.get_slice(".", 0)
 			if settings["convert_scripts_to_pascal_case"]: 
 				text = text.to_pascal_case()
-			if settings["script_icons"]:
+			if settings["svg_icons"]:
+				icon = scripts_icon
+			if settings["emoji_icons"]:
 				if tests.has(script_item):
-					text = "🧪 " + text
+					text = settings["tests_icon"] + " " + text
 				else:
-					text = "📝 " + text
-			elif settings["script_decorators"]: 
+					text = settings["scripts_icon"] + " " + text
+			elif settings["script_decorations"]: 
 				text = "▪ " + text
 		"docs":
 			if settings["convert_docs_to_snake_case"]: 
 				text = text.to_snake_case()
-			if settings["script_icons"]: 
-				text = "🔍 " + text
-			elif settings["script_decorators"]: 
+			if settings["svg_icons"]:
+				icon = docs_icon
+			if settings["emoji_icons"]: 
+				text = settings["docs_icon"] + " " + text
+			elif settings["script_decorations"]: 
 				text = "▪ " + text
 		"files":
 			if not settings["show_file_formats"]: 
 				text = text.get_slice(".", 0)
 			if settings["convert_files_to_pascal_case"]: 
 				text = text.to_pascal_case()
-			if settings["script_icons"]: 
-				text = "️📦 " +  text
-			elif settings["script_decorators"]: 
+			if settings["svg_icons"]:
+				icon = files_icon
+			if settings["emoji_icons"]: 
+				text = settings["files_icon"] + " " +  text
+			elif settings["script_decorations"]: 
 				text = "▪ " + text
 	
 	if settings["show_script_save_indicator"]:
 		if not script_item.is_saved:
-			if settings["indicator_icons"]: text += " 💬"
-			else: text += settings["save_indicator"]
+			if settings["indicator_icons"]: text += " " + settings["save_indicator"]
+			else: text += settings["no_icon_save_indicator"]
 	
 	if settings["show_script_error_indicator"]:
 		if errors.size() > 0: for i in errors:
 			if script_item.path in i[0]:
-				if settings["indicator_icons"]: text += " ❌"
-				else: text += settings["error_indicator"]
+				if settings["indicator_icons"]: text += + settings["error_indicator"]
+				else: text += settings["no_icon_error_indicator"]
 				break
 	
 	if settings["show_script_lock_indicator"]:
 		if locked_scripts.has(current_tab):
 			for i in locked_scripts[current_tab]:
 				if i[0] == script_item:
-					if settings["indicator_icons"]: text += " 🔒"
-					else: text += settings["lock_indicator"]
+					if settings["indicator_icons"]: text += + settings["lock_indicator"]
+					else: text += settings["no_icon_lock_indicator"]
 					break
 	
 	if settings["show_script_favourite_indicator"]:
 		if favs.has(script_item):
 			if settings["indicator_icons"]:
-				text += " ★"
+				text += " " + settings["favourite_indicator"]
 			else:
-				text += settings["favourite_indicator"]
-	
-#	if tests.has(script_item) and scripts.has(script_item):
-#		if current_tab == "scripts":
-#			return
+				text += settings["no_icon_favourite_indicator"]
 	
 	var id := script_list.add_item(text)
 	script_list.set_item_metadata(id, script_item)
+	if icon: script_list.set_item_icon(id, icon)
 	
 	list_set_items_color(id, script_item)
 

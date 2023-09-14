@@ -2,7 +2,10 @@
 
 <img width="800" alt="cover" src="addons/script_panel_plus/assets/promo.png">
 
-**“Script Panel Plus”** is a replacement plugin for a built-in Godot's scripting panel. It has more features and makes script-organizing a better experience. The plugin's settings allow you to highly customize the panel and hide unnecessary UI-elements. Don't forget to check panel's Project-Settings category.
+If you want more advanced script panel in Godot 4.1, than **“Script Panel Plus”** is for you! It has more features than original. It is highly customizable (check plugins settings for that).
+
+# New Update
+  <img width="800" src="addons/script_panel_plus/assets/update.png"/>
 
 # 💼 Features:
 
