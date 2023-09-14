@@ -110,6 +110,7 @@ class ScriptItem:
 var scripts_icon := preload("res://addons/script_panel_plus/script_panel/icons/scripts.svg")
 var docs_icon := preload("res://addons/script_panel_plus/script_panel/icons/docs.svg")
 var files_icon := preload("res://addons/script_panel_plus/script_panel/icons/files.svg")
+var tests_icon := preload("res://addons/script_panel_plus/script_panel/icons/tests.svg")
 
 ## MAIN
 
@@ -1083,6 +1084,8 @@ func list_add_item(script_item: ScriptItem) -> void:
 				text = text.to_pascal_case()
 			if settings["svg_icons"]:
 				icon = scripts_icon
+				if tests.has(script_item):
+					icon = tests_icon
 			if settings["emoji_icons"]:
 				if tests.has(script_item):
 					text = settings["tests_icon"] + " " + text
