@@ -1122,7 +1122,7 @@ func list_add_item(script_item: ScriptItem) -> void:
 	if settings["show_script_error_indicator"]:
 		if errors.size() > 0: for i in errors:
 			if script_item.path in i[0]:
-				if settings["indicator_icons"]: text += + settings["error_indicator"]
+				if settings["indicator_icons"]: text += " " + settings["error_indicator"]
 				else: text += settings["no_icon_error_indicator"]
 				break
 	
@@ -1130,7 +1130,7 @@ func list_add_item(script_item: ScriptItem) -> void:
 		if locked_scripts.has(current_tab):
 			for i in locked_scripts[current_tab]:
 				if i[0] == script_item:
-					if settings["indicator_icons"]: text += + settings["lock_indicator"]
+					if settings["indicator_icons"]: text += " " + settings["lock_indicator"]
 					else: text += settings["no_icon_lock_indicator"]
 					break
 	
