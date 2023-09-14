@@ -4,56 +4,59 @@
 
 If you want more advanced script panel in Godot 4.1, than **“Script Panel Plus”** is for you! It has more features than original. It is highly customizable (check plugins settings for that).
 
-# New Update
-  <img width="800" src="addons/script_panel_plus/assets/update.png"/>
+# New Update: Icons!
+
+<img width="800" src="addons/script_panel_plus/assets/update.png"/>
 
 # 💼 Features:
 
-### Tabs 🗄️
+## Scripts Tab
 
-- Scripts Tab
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/scripts-tab.png"/>
+Scripts tab contains only script item.
 
-- Documentation Tab
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/docs-tab.png"/>
+<img width="256" src="addons/script_panel_plus/assets/screenshots/scripts-tab.png"/>
 
-- Favourites Tab
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/favs-tab.png"/>
+## Documentation Tab
 
-### Look & Feel 🧊
+Documentation tab contains only Documentation items.
 
-- Script Icons
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/script-icons.png"/>
+<img width="256" src="addons/script_panel_plus/assets/screenshots/docs-tab.png"/>
 
-- Script Decorations
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/script-decorations.png"/>
+## Favourites Tab
 
-- Different Colors
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/script-colors.png"/>
+You can toggle any script item **favourite**, and it will appear in the **Favourites** tab. 
 
-- List Resize (**with Ctrl + Mouse Wheel**)
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/resize.png"/>
+<img width="256" src="addons/script_panel_plus/assets/screenshots/favs-tab.png"/>
 
-- Custom Names (**no effect on file-names**)
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/custom-name.png"/>
+## Different Colors
 
-- Multiple Columns
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/multiple-columns.png"/>
+You can choose any color for different types of items (scripts, documentation, files)
 
-- Convert Names to **Pascal/Snake** case
-  
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/pascal-case.png"/>
+<img width="256" src="addons/script_panel_plus/assets/screenshots/script-colors.png"/>
 
-### Indicators 🔔
+## List Resize (**with Ctrl + Mouse Wheel**)
+
+You can resize Font Size with **CTRL key and Mouse Wheel**
+
+<img width="256" src="addons/script_panel_plus/assets/screenshots/resize.png"/>
+
+## Custom Names (**no effect on file-names**)
+
+You can rename any item in the list without affecting its filesystem name.
+
+<img width="256" src="addons/script_panel_plus/assets/screenshots/custom-name.png"/>
+
+## Multiple Columns
+
+<img width="256" src="addons/script_panel_plus/assets/screenshots/multiple-columns.png"/>
+
+## Convert Names to **Pascal/Snake** case
+
+You can turn on automatic **Pascal/Snake** case styling for items.
+
+<img width="256" src="addons/script_panel_plus/assets/screenshots/pascal-case.png"/>
+
+## Indicators 🔔
 
 - Unsaved-Progress Indicator
   
@@ -66,8 +69,6 @@ If you want more advanced script panel in Godot 4.1, than **“Script Panel Plus
 - Locked Script Indicator (**You can lock script's position**)
   
   <img width="256" src="addons/script_panel_plus/assets/screenshots/indicator3.png"/>
-
-### 
 
 ### And More... 🧮
 
