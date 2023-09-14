@@ -1116,22 +1116,22 @@ func list_add_item(script_item: ScriptItem) -> void:
 	
 	if settings["show_script_save_indicator"]:
 		if not script_item.is_saved:
-			if settings["indicator_icons"]: text += " " + settings["save_indicator"]
-			else: text += settings["no_icon_save_indicator"]
+			if settings["indicator_icons"]: text += " " + settings.get("save_indicator", "")
+			else: text += settings.get("no_icon_save_indicator", "")
 	
 	if settings["show_script_error_indicator"]:
 		if errors.size() > 0: for i in errors:
 			if script_item.path in i[0]:
-				if settings["indicator_icons"]: text += " " + settings["error_indicator"]
-				else: text += settings["no_icon_error_indicator"]
+				if settings["indicator_icons"]: text += " " + settings.get("error_indicator", "")
+				else: text += settings.get("no_icon_error_indicator", "")
 				break
 	
 	if settings["show_script_lock_indicator"]:
 		if locked_scripts.has(current_tab):
 			for i in locked_scripts[current_tab]:
 				if i[0] == script_item:
-					if settings["indicator_icons"]: text += " " + settings["lock_indicator"]
-					else: text += settings["no_icon_lock_indicator"]
+					if settings["indicator_icons"]: text += " " + settings.get("lock_indicator", "")
+					else: text += settings.get("no_icon_lock_indicator", "")
 					break
 	
 	if settings["show_script_favourite_indicator"]:
@@ -1139,7 +1139,7 @@ func list_add_item(script_item: ScriptItem) -> void:
 			if settings["indicator_icons"]:
 				text += " " + settings["favourite_indicator"]
 			else:
-				text += settings["no_icon_favourite_indicator"]
+				text += settings.get("no_icon_favourite_indicator", "")
 	
 	var id := script_list.add_item(text)
 	script_list.set_item_metadata(id, script_item)
