@@ -14,61 +14,61 @@ If you want more advanced script panel in Godot 4.1, than **“Script Panel Plus
 
 Scripts tab contains only script item.
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/scripts-tab.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/scripts-tab.png"/>
 
 ## Documentation Tab
 
 Documentation tab contains only Documentation items.
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/docs-tab.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/docs-tab.png"/>
 
 ## Favourites Tab
 
 You can toggle any script item **favourite**, and it will appear in the **Favourites** tab. 
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/favs-tab.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/favs-tab.png"/>
 
 ## Different Colors
 
 You can choose any color for different types of items (scripts, documentation, files)
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/script-colors.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/script-colors.png"/>
 
 ## List Resize (**with Ctrl + Mouse Wheel**)
 
 You can resize Font Size with **CTRL key and Mouse Wheel**
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/resize.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/resize.png"/>
 
 ## Custom Names (**no effect on file-names**)
 
 You can rename any item in the list without affecting its filesystem name.
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/custom-name.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/custom-name.png"/>
 
 ## Multiple Columns
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/multiple-columns.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/multiple-columns.png"/>
 
 ## Convert Names to **Pascal/Snake** case
 
 You can turn on automatic **Pascal/Snake** case styling for items.
 
-<img width="256" src="addons/script_panel_plus/assets/screenshots/pascal-case.png"/>
+<img src="addons/script_panel_plus/assets/screenshots/pascal-case.png"/>
 
 ## Indicators 🔔
 
 - Unsaved-Progress Indicator
   
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/indicator1.png"/>
+  <img src="addons/script_panel_plus/assets/screenshots/indicator1.png"/>
 
 - Error Indicator
   
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/indicator2.png"/>
+  <img src="addons/script_panel_plus/assets/screenshots/indicator2.png"/>
 
 - Locked Script Indicator (**You can lock script's position**)
   
-  <img width="256" src="addons/script_panel_plus/assets/screenshots/indicator3.png"/>
+  <img src="addons/script_panel_plus/assets/screenshots/indicator3.png"/>
 
 ### And More... 🧮
 
