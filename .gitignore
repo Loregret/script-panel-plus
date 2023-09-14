@@ -13,5 +13,9 @@ logo.png.import
 # VScode
 .vscode/
 
+# Icons
+addons/script_panel_plus/script_panel/icons/*.import
+
+
 # Plugin save files
 addons/script_panel_plus/saves/

@@ -116,10 +116,10 @@ var tests_icon:   Texture2D
 ## MAIN
 
 func _ready() -> void:
-	scripts_icon = preload("res://addons/script_panel_plus/script_panel/icons/scripts.svg")
-	docs_icon = preload("res://addons/script_panel_plus/script_panel/icons/docs.svg")
-	files_icon = preload("res://addons/script_panel_plus/script_panel/icons/files.svg")
-	tests_icon = preload("res://addons/script_panel_plus/script_panel/icons/tests.svg")
+	scripts_icon = load("res://addons/script_panel_plus/script_panel/icons/scripts.svg")
+	docs_icon = load("res://addons/script_panel_plus/script_panel/icons/docs.svg")
+	files_icon = load("res://addons/script_panel_plus/script_panel/icons/files.svg")
+	tests_icon = load("res://addons/script_panel_plus/script_panel/icons/tests.svg")
 	
 	## NODES
 	vsplit = $VBoxContainer/VSplitContainer
@@ -1491,7 +1491,6 @@ func _load_current_script() -> void:
 	for i in engine_script_list.item_count:
 		if engine_script_list.get_item_tooltip(i) == _script.path:
 			engine_script_list.select(i)
-#			engine_script_list.item_selected.emit(i) ## Issue with taking selection from Editor Layout to Script Layout
 
 func _load_tabs() -> void:
 	if not load_data.has("tabs"): return
