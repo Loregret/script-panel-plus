@@ -124,7 +124,6 @@ same_column_width = true
 script = ExtResource("2_g67jx")
 
 [node name="PopupMenu" type="PopupMenu" parent="VBoxContainer/VSplitContainer/ScriptList"]
-size = Vector2i(100, 45)
 allow_search = false
 
 [node name="MethodListContainer" type="VBoxContainer" parent="VBoxContainer/VSplitContainer"]

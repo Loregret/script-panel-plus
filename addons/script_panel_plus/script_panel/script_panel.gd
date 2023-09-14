@@ -410,7 +410,8 @@ func _on_list_input(event: InputEvent) -> void:
 func _on_item_click(index: int, \
 at_position: Vector2, button_index: int) -> void:
 	if button_index == MOUSE_BUTTON_RIGHT:
-		_call_popup(index)
+		var _pos := get_global_mouse_position()
+		_call_popup(index, _pos)
 	elif button_index == MOUSE_BUTTON_MIDDLE:
 		script_list.select(index)
 		script_list.item_selected.emit(index)
@@ -1559,15 +1560,16 @@ func menu_button_update() -> void:
 
 ## POPUP
 
-func _call_popup(item_index: int) -> void:
+func _call_popup(item_index: int, pos: Vector2) -> void:
 		var script_item: ScriptItem = get_script_from_list_by_index(item_index)
-		popup.popup(Rect2i(get_global_mouse_position(), Vector2i(100, 0)))
 		
 		popup.clear()
+		popup.position = get_screen_position() + get_local_mouse_position()
+		popup.reset_size()
+		popup.popup()
 		
 		popup.add_item("Close Script ", 0)
 		popup.set_item_metadata(popup.get_item_index(0), item_index) # CLOSE
-		
 		#popup.add_item("", 100)
 		#popup.set_item_as_separator(popup.get_item_index(100), true)
 		
