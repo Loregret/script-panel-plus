@@ -107,14 +107,20 @@ class ScriptItem:
 	func _to_string() -> String:
 		return path
 
-var scripts_icon := preload("res://addons/script_panel_plus/script_panel/icons/scripts.svg")
-var docs_icon := preload("res://addons/script_panel_plus/script_panel/icons/docs.svg")
-var files_icon := preload("res://addons/script_panel_plus/script_panel/icons/files.svg")
-var tests_icon := preload("res://addons/script_panel_plus/script_panel/icons/tests.svg")
+var scripts_icon: Texture2D
+var docs_icon:    Texture2D
+var files_icon:   Texture2D
+var tests_icon:   Texture2D
+
 
 ## MAIN
 
 func _ready() -> void:
+	scripts_icon = preload("res://addons/script_panel_plus/script_panel/icons/scripts.svg")
+	docs_icon = preload("res://addons/script_panel_plus/script_panel/icons/docs.svg")
+	files_icon = preload("res://addons/script_panel_plus/script_panel/icons/files.svg")
+	tests_icon = preload("res://addons/script_panel_plus/script_panel/icons/tests.svg")
+	
 	## NODES
 	vsplit = $VBoxContainer/VSplitContainer
 	script_list = $VBoxContainer/VSplitContainer/ScriptList
