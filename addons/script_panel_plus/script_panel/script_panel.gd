@@ -219,7 +219,6 @@ func check_for_script_change()   -> void:
 	check_rename_status(current_script)
 	methods_list_update()
 	
-	
 	if prev_script:
 		_on_script_change(prev_script)
 		current_script_changed.emit()
@@ -845,20 +844,27 @@ func _on_script_change(prev_script: ScriptItem) -> void:
 			if is_instance_valid(_editor): check_errors(_editor)
 
 func add_script_item_by_engine_index(index: int, push_front := false) -> void:
+	## DOCUMENT
+	if engine_script_list.get_item_tooltip(index).find\
+	("Class Reference") != -1:
+		var text := engine_script_list.get_item_tooltip(index).get_slice(" Class Reference", 0)
+		
+		if text.contains('.gd'): # Means Custom Docs
+			text = text.replace('"', "")
+			text = text.replace('.gd', "")
+			text = text.split("/", false, 0)[-1] as String
+			text = text.to_pascal_case()
+		
+		var path := engine_script_list.get_item_tooltip(index)
+		var type := "docs"
+		add_script_item(text, path, type, push_front)
+	
 	## SCRIPT
-	if engine_script_list.get_item_tooltip(index).find(".gd") != -1 or\
+	elif engine_script_list.get_item_tooltip(index).find(".gd") != -1 or\
 	engine_script_list.get_item_tooltip(index).find(".cs") != -1:
 		var text := engine_script_list.get_item_text(index)
 		var path := engine_script_list.get_item_tooltip(index)
 		var type := "scripts"
-		add_script_item(text, path, type, push_front)
-	
-	## DOCUMENT
-	elif engine_script_list.get_item_tooltip(index).find\
-	("Class Reference") != -1:
-		var text := engine_script_list.get_item_tooltip(index).get_slice(" Class Reference", 0)
-		var path := engine_script_list.get_item_tooltip(index)
-		var type := "docs"
 		add_script_item(text, path, type, push_front)
 	
 	## FILE

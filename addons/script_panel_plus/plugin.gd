@@ -189,6 +189,7 @@ func hide_all_bottom_bars() -> void:
 func hide_current_bottom_bar() -> void:
 	var cur_bottom_bar := get_current_bottom_bar()
 	if cur_bottom_bar: cur_bottom_bar.visible = false
+	else: hide_all_bottom_bars()
 
 func show_current_bottom_bar() -> void:
 	var cur_bottom_bar := get_current_bottom_bar()
@@ -221,10 +222,12 @@ func hide_screen_select_button() -> void:
 func get_current_bottom_bar() -> Control:
 	var result: Control
 	
+	# Script
 	if engine_script_editor.get_current_editor():
 		var i = engine_script_editor.get_current_editor().\
 		find_children("*", "CodeTextEditor", true, false)[0]
 		result = i.get_child(1)
+	# Docs
 	else:
 		if not engine_script_list.is_anything_selected(): return result
 		
