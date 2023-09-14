@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://ln8u12ni037b"]
+[gd_scene load_steps=14 format=3 uid="uid://ln8u12ni037b"]
 
 [ext_resource type="Script" path="res://addons/script_panel_plus/script_panel/script_panel.gd" id="1_b1kur"]
+[ext_resource type="Texture2D" uid="uid://d4n28x4moh2t7" path="res://addons/script_panel_plus/script_panel/icons/search.svg" id="2_ainsi"]
 [ext_resource type="Script" path="res://addons/script_panel_plus/script_panel/script_list.gd" id="2_g67jx"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_06sl4"]
@@ -72,6 +73,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Search"
 clear_button_enabled = true
+right_icon = ExtResource("2_ainsi")
 select_all_on_focus = true
 
 [node name="MenuButton" type="MenuButton" parent="VBoxContainer/SearchBar"]
@@ -137,6 +139,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Search"
 clear_button_enabled = true
+right_icon = ExtResource("2_ainsi")
 select_all_on_focus = true
 
 [node name="MenuButton" type="MenuButton" parent="VBoxContainer/VSplitContainer/MethodListContainer/SearchBar"]

@@ -115,12 +115,13 @@ var tests_icon:   Texture2D
 
 ## MAIN
 
+func _enter_tree() -> void:
+	scripts_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/scripts.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
+	docs_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/docs.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
+	files_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/files.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
+	tests_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/tests.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
+
 func _ready() -> void:
-	scripts_icon = load("res://addons/script_panel_plus/script_panel/icons/scripts.svg")
-	docs_icon = load("res://addons/script_panel_plus/script_panel/icons/docs.svg")
-	files_icon = load("res://addons/script_panel_plus/script_panel/icons/files.svg")
-	tests_icon = load("res://addons/script_panel_plus/script_panel/icons/tests.svg")
-	
 	## NODES
 	vsplit = $VBoxContainer/VSplitContainer
 	script_list = $VBoxContainer/VSplitContainer/ScriptList
