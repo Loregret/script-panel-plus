@@ -41,13 +41,13 @@ You can toggle the Search Bar **ON** or **OFF** in the Plugin Settings.
 
 ## Different Colors
 
-You can choose any color for different types of items (scripts, documentation, files)
+You can choose any color for different types of items (scripts, documentation, files) in the settings.
 
 <img src="addons/script_panel_plus/assets/screenshots/script-colors.png"/>
 
 ## List Resize (**with Ctrl + Mouse Wheel**)
 
-You can resize Font Size with **CTRL key and Mouse Wheel**
+You can resize Font Size with **CTRL** + **Mouse Wheel**
 
 <img src="addons/script_panel_plus/assets/screenshots/resize.png"/>
 
