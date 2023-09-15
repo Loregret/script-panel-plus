@@ -59,13 +59,13 @@ You can rename any item in the list without affecting its filesystem name.
 
 ## Multiple Columns
 
-<img src="addons/script_panel_plus/assets/screenshots/multiple-columns.png"/>
+You can turn it **ON** and **OFF** in the settings.
 
-You can turn it **ON** and **OFF**.
+<img src="addons/script_panel_plus/assets/screenshots/multiple-columns.png"/>
 
 ## Convert Names to **Pascal/Snake** case
 
-You can turn on automatic **Pascal/Snake** case styling for items.
+You can turn on automatic **Pascal/Snake** case styling for items in the settings.
 
 <img src="addons/script_panel_plus/assets/screenshots/pascal-case.png"/>
 
