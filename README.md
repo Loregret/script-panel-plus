@@ -33,6 +33,12 @@ You can toggle any script item **favourite**, and it will appear in the **Favour
 
 <img src="addons/script_panel_plus/assets/screenshots/favs-tab.png"/>
 
+## Method Search
+
+You can toggle the Search Bar **ON** or **OFF** in the Plugin Settings.
+
+![Screenshot_20230915_134752](https://github.com/Loregret/script-panel-plus/assets/31369647/8163525f-1bad-4e16-88c7-8623065d3f98)
+
 ## Different Colors
 
 You can choose any color for different types of items (scripts, documentation, files)
