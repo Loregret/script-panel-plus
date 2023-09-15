@@ -114,7 +114,7 @@ var tests_icon:   Texture2D
 
 
 ## MAIN
-
+ 
 func _enter_tree() -> void:
 	scripts_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/scripts.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
 	docs_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/docs.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
@@ -1025,7 +1025,7 @@ func list_update() -> void:
 	
 	for object in get_current_script_array():
 		if search_line.text.is_empty() or \
-		search_line.text.contains(object.text):
+		search_line.text.contains(object.text) or object.text.contains(search_line.text):
 			list_add_item(object)
 			
 			## Tooltip
