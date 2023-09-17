@@ -9,7 +9,7 @@ var engine_editor_interface:   EditorInterface
 var engine_script_editor:      ScriptEditor
 var engine_script_list:        ItemList
 
-## new Nodes
+## New Nodes
 var script_list:          ItemList
 var method_list:          ItemList
 var method_search_line:   LineEdit
@@ -169,6 +169,7 @@ func _process(_delta: float) -> void:
 	if not is_instance_valid(plugin_reference): return
 	if not engine_script_list.is_anything_selected(): return
 	if settings.is_empty(): return
+	
 	check_for_script_change()
 	check_current_line_label()
 	check_current_error_label()
@@ -176,13 +177,6 @@ func _process(_delta: float) -> void:
 	check_current_save_state()
 	check_not_saved()
 	list_update()
-
-func update() -> void:
-	zen_button.visible = settings["show_distraction_free_button"]
-	if settings["list_multiple_columns"]:
-		script_list.max_columns = 0
-	else:
-		script_list.max_columns = 1
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:
@@ -195,22 +189,32 @@ func _input(event: InputEvent) -> void:
 				var index := list_get_scripts_index(current_script)
 				script_list.select(index)
 				script_list.item_selected.emit(index)
-				delete_script_item(index)
+				delete_script_item_by_index(index)
+
+func update() -> void:
+	zen_button.visible = settings["show_distraction_free_button"]
+	
+	if settings["list_multiple_columns"]:
+		script_list.max_columns = 0
+	else:
+		script_list.max_columns = 1
 
 
 ## CHECKS
 
-func check_not_saved()           -> void:
+func check_not_saved() -> void:
 	if not_saved.is_empty(): return
 	for i in not_saved: check_save_state(i)
 
-func check_for_script_change()   -> void:
+func check_for_script_change() -> void:
+#	if get_current_script_array().is_empty(): return
+	
 	if not script_list.is_anything_selected(): reselect_current_script()
 	
 	var selected_item := engine_script_list.get_selected_items()[0]
 	var tooltip := engine_script_list.get_item_tooltip(selected_item)
 	
-	if current_script and current_script.get("path") == tooltip: return
+	if current_script: if current_script.get("path") == tooltip: return
 	
 	var prev_script:ScriptItem = current_script
 	var selected_script := get_script_from_engine_list_index(selected_item)
@@ -219,10 +223,11 @@ func check_for_script_change()   -> void:
 		current_script = selected_script
 		reselect_current_script()
 	else: # nothing is selected = new script
-		add_script_item_by_engine_index(selected_item)
-		current_script = get_script_from_engine_list_index(selected_item)
-		sort_all_tab()
-		update_locked_scripts_position()
+		if engine_script_list.item_count > 0:
+			add_script_item_by_engine_index(selected_item)
+			current_script = get_script_from_engine_list_index(selected_item)
+			sort_all_tab()
+			update_locked_scripts_position()
 	
 	_on_script_editor_changed(current_script)
 	check_current_tab()
@@ -234,7 +239,7 @@ func check_for_script_change()   -> void:
 		_on_script_change(prev_script)
 		current_script_changed.emit()
 
-func check_for_missing_scripts()                       -> void:
+func check_for_missing_scripts() -> void:
 	var __count := -1
 	if __count != engine_script_list.item_count:
 		for i in all:
@@ -248,7 +253,7 @@ func check_for_missing_scripts()                       -> void:
 			
 		__count = engine_script_list.item_count
 
-func check_errors(script_editor: ScriptEditorBase)     -> void:
+func check_errors(script_editor: ScriptEditorBase) -> void:
 	var label: Label = get_error_label(script_editor)
 	var text:String = label.text
 	
@@ -417,28 +422,27 @@ func _on_list_input(event: InputEvent) -> void:
 	tab_was_changed_manually = true
 	update_font_size()
 
-func _on_item_click(index: int, \
-at_position: Vector2, button_index: int) -> void:
+func _on_item_click(index: int, at_position: Vector2, button_index: int) -> void:
 	if button_index == MOUSE_BUTTON_RIGHT:
 		var _pos := get_global_mouse_position()
 		_call_popup(index, _pos)
 	elif button_index == MOUSE_BUTTON_MIDDLE:
 		script_list.select(index)
 		script_list.item_selected.emit(index)
-		delete_script_item(index)
+		delete_script_item_by_index(index)
 
-func _on_item_selected(index: int)       -> void:
+func _on_item_selected(index: int) -> void:
 	var _script := script_list.get_item_metadata(index)
 	list_select_script(_script, index)
 
-func _on_error_input(event: InputEvent)  -> void:
+func _on_error_input(event: InputEvent) -> void:
 	if not event is InputEventMouseButton: return
 	var line := 0
 	if event.button_index == MOUSE_BUTTON_LEFT:
 		if engine_script_editor.get_current_editor().get_base_editor():
 			engine_script_editor.goto_line( error_label.text.get_slice(",", 0).to_int() -1 )
 
-func _on_search_input(new_text: String)  -> void:
+func _on_search_input(new_text: String) -> void:
 	pass
 
 func _on_rename_bar_line_input(event: InputEvent) -> void:
@@ -499,6 +503,22 @@ func get_error_label(script_editor: ScriptEditorBase) -> Label:
 func get_line_label(script_editor: ScriptEditorBase)  -> Label:
 	var result: Label = script_editor.get_child(0).get_child(0).get_child(1).get_child(4) as Label
 	return result
+
+func engine_list_close_current() -> void:
+	var _top_bar:Control = plugin_reference.top_bar
+	if _top_bar:_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 10)
+
+func engine_list_close_docs() -> void:
+	var _top_bar:Control = plugin_reference.top_bar
+	if _top_bar:_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 11)
+
+func engine_list_close_all() -> void:
+	var _top_bar:Control = plugin_reference.top_bar
+	if _top_bar:_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 12)
+
+func engine_list_close_other() -> void:
+	var _top_bar:Control = plugin_reference.top_bar
+	if _top_bar:_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 13)
 
 
 ## SCRIPT EDITOR
@@ -885,8 +905,7 @@ func add_script_item_by_engine_index(index: int, push_front := false) -> void:
 		var type := "files"
 		add_script_item(text, path, type, push_front)
 
-func add_script_item(text: String, path: String, type: String, \
-push_front := false, add_to_favourite := false, add_to_tests := false) -> ScriptItem:
+func add_script_item(text: String, path: String, type: String, push_front := false, add_to_favourite := false, add_to_tests := false) -> ScriptItem:
 	var script_array := get_script_array(type)
 	var item := ScriptItem.new(text.replace("(*)", ""), path, type)
 	script_update_time(item)
@@ -904,10 +923,22 @@ push_front := false, add_to_favourite := false, add_to_tests := false) -> Script
 		
 	return item
 
-func delete_script_item(index: int) -> void:
-	## ID:  10 Current | 11 Docs | 12 All | 13 Others
-	
+func delete_script_item_by_index(index: int) -> void:
 	var script_item := get_script_from_list_by_index(index)
+	delete_script_item(script_item)
+
+func delete_script_item(script_item: ScriptItem) -> void:
+	if script_item == current_script:
+		current_script = null
+	
+	var script_index := list_get_scripts_index(script_item)
+	if script_index == -1: return
+	if script_index < script_list.item_count: 
+		script_list.item_selected.emit(script_index)
+		engine_list_close_current()
+	
+	
+	all.erase(script_item)
 	
 	match script_item.type:
 		"scripts":
@@ -919,16 +950,13 @@ func delete_script_item(index: int) -> void:
 	
 	if favs.has(script_item):
 			favs.erase(script_item)
-	
 	if tests.has(script_item):
 			tests.erase(script_item)
 	
 	remove_script_lock(script_item)
 	
-	var _top_bar:Control = plugin_reference.top_bar
-	if _top_bar:_top_bar.get_child(0).get_popup().emit_signal("id_pressed", 10)
-	
-	all.erase(script_item)
+	if all.is_empty():
+		engine_list_close_all()
 
 func move_script_item(script_item: ScriptItem, script_array: Array[ScriptItem], index: int) -> void:
 	if not script_array or not script_item: return
@@ -1006,8 +1034,7 @@ func get_script_array(tab_name: String) -> Array[ScriptItem]:
 	
 	return array_ref
 
-func get_script_from_script_editor(\
-script_editor: ScriptEditorBase) -> ScriptItem:
+func get_script_from_script_editor(script_editor: ScriptEditorBase) -> ScriptItem:
 	var result: ScriptItem
 	
 	for i in all:
@@ -1016,8 +1043,62 @@ script_editor: ScriptEditorBase) -> ScriptItem:
 	
 	return result
 
+func clear_all_arrays() -> void:
+	all.clear()
+	docs.clear()
+	scripts.clear()
+	files.clear()
+	favs.clear()
+	tests.clear()
+
 
 ## LIST
+
+func list_close_current(script_item: ScriptItem) -> void:
+	if script_list.item_count == 0: return
+	list_select_script(script_item)
+	delete_script_item(script_item)
+
+func list_close_other(selected_script: ScriptItem) -> void:
+	if all.size() < 2: return
+	
+	for i in range(all.size()-1, -1, -1):
+		
+		if all[i] == selected_script: continue
+		delete_script_item(all[i])
+
+func list_close_docs() -> void:
+	if all.is_empty(): return
+	
+	for i in range(all.size() - 1, -1, -1):
+		
+		var _script := all[i]
+		
+		if not _script: continue
+		if _script.type != "docs": continue
+		
+		delete_script_item(_script)
+	
+	docs.clear()
+
+func list_close_all() -> void:
+	current_script = null
+	clear_all_arrays()
+	engine_script_list.clear()
+	script_list.clear()
+
+func list_close_all_non_favs() -> void:
+	if all.is_empty(): return
+	if favs.is_empty(): list_close_all()
+	
+	for i in range(all.size() - 1, -1, -1):
+		
+		var _script := all[i]
+		
+		if not _script: continue
+		if favs.has(_script): continue
+		
+		delete_script_item(_script)
 
 func list_update() -> void:
 	script_list.clear()
@@ -1029,8 +1110,7 @@ func list_update() -> void:
 			list_add_item(object)
 			
 			## Tooltip
-			script_list.set_item_tooltip(list_get_scripts_index(object), \
-			object.path + newline + "---" + newline + object.last_time_edited)
+			script_list.set_item_tooltip(list_get_scripts_index(object), object.path + newline + "---" + newline + object.last_time_edited)
 	
 	if plugin_reference: list_check_settings()
 	
@@ -1155,6 +1235,8 @@ func list_add_item(script_item: ScriptItem) -> void:
 	list_set_items_color(id, script_item)
 
 func list_select_script(_script: ScriptItem, index := -1) -> void:
+	if not _script: return
+	
 	var res_path := _script.path
 	
 	if index == -1: index = list_get_scripts_index(_script)
@@ -1165,9 +1247,10 @@ func list_select_script(_script: ScriptItem, index := -1) -> void:
 		engine_editor_interface.edit_resource(file)
 	elif res_path.contains("Class Reference"):
 		## For Documentation
-		var _editor := engine_script_editor.get_open_script_editors()[0]
-		if _editor:
-			_editor.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
+		var editors := engine_script_editor.get_open_script_editors()
+		if not editors.is_empty():
+			var editor := editors[0]
+			editor.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
 		else: ## Alternative Search
 			var editor_help = engine_script_editor.find_children\
 			("*", "EditorHelp", true, false)[0]
@@ -1175,7 +1258,7 @@ func list_select_script(_script: ScriptItem, index := -1) -> void:
 				editor_help.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
 	else:
 		## Deleted
-		if index != -1: delete_script_item(index)
+		if index != -1: delete_script_item_by_index(index)
 	
 	if index != -1: script_list.select(index)
 
@@ -1253,6 +1336,16 @@ func _on_method_search_button_pressed(id: int) -> void:
 
 ## SAVE
 
+func get_script_item_as_dict(script_item: ScriptItem) -> Dictionary:
+	var result := {
+		"original_text": script_item.original_text,
+		"text": script_item.text,
+		"path": script_item.path,
+		"type": script_item.type,
+		"last_time_edited": script_item.last_time_edited,
+	}
+	return result
+
 func save_last_session() -> void:
 	if not settings["save_session"]: return
 	
@@ -1324,16 +1417,6 @@ func _save_locked_scripts() -> void:
 			
 			save_data["locked_scripts"].append([get_script_item_as_dict(_script), _tab, index])
 
-func get_script_item_as_dict(script_item: ScriptItem) -> Dictionary:
-	var result := {
-		"original_text": script_item.original_text,
-		"text": script_item.text,
-		"path": script_item.path,
-		"type": script_item.type,
-		"last_time_edited": script_item.last_time_edited,
-	}
-	return result
-
 func _save_current_script() -> void:
 	if current_script:
 		save_data["current_script"] = current_script.path
@@ -1397,6 +1480,26 @@ func load_last_session() -> void:
 	update_font_size()
 	sort_current_tab()
 
+func get_script_item_from_dict(dict: Dictionary) -> ScriptItem:
+	var _orig_text: String = dict.get("original_text")
+	var _text:String = dict.get("text")
+	var _path:String = dict.get("path")
+	var _type:String = dict.get("type")
+	var _time:String = dict.get("last_time_edited")
+	
+	var script := get_script_by_path(_path)
+	
+	if not script:
+		script = add_script_item(_text, _path, _type, false)
+	
+	script.text = _text
+	script.original_text = _orig_text
+	script.path = _path
+	script.type = _type
+	script.last_time_edited = _time
+	
+	return script
+
 func _load_font_size() -> void:
 	if not load_data.has("list_font_size_scripts"): return
 	if not load_data.has("list_font_size_docs"): return
@@ -1455,26 +1558,6 @@ func _load_script_array(saved_script_array: Array, array_name: String) -> void:
 		var _current_script := get_script_by_path(extracted_script.path)
 		move_script_item(_current_script, current_array, i)
 
-func get_script_item_from_dict(dict: Dictionary) -> ScriptItem:
-	var _orig_text: String = dict.get("original_text")
-	var _text:String = dict.get("text")
-	var _path:String = dict.get("path")
-	var _type:String = dict.get("type")
-	var _time:String = dict.get("last_time_edited")
-	
-	var script := get_script_by_path(_path)
-	
-	if not script:
-		script = add_script_item(_text, _path, _type, false)
-	
-	script.text = _text
-	script.original_text = _orig_text
-	script.path = _path
-	script.type = _type
-	script.last_time_edited = _time
-	
-	return script
-
 func _load_locked_scripts() -> void:
 	var _array := load_data["locked_scripts"] as Array
 	
@@ -1488,6 +1571,8 @@ func _load_current_script() -> void:
 	if not load_data.has("current_script"): return
 	
 	var _script: ScriptItem = get_script_by_path(load_data["current_script"])
+	
+	if not _script: return
 	
 	for i in engine_script_list.item_count:
 		if engine_script_list.get_item_tooltip(i) == _script.path:
@@ -1590,53 +1675,79 @@ func _call_popup(item_index: int, pos: Vector2) -> void:
 		popup.reset_size()
 		popup.popup()
 		
-		popup.add_item("Close Script ", 0)
-		popup.set_item_metadata(popup.get_item_index(0), item_index) # CLOSE
-		#popup.add_item("", 100)
-		#popup.set_item_as_separator(popup.get_item_index(100), true)
+		## Close Script
+		popup.add_item("Close Script", 0)
+		popup.set_item_metadata(popup.get_item_index(0), item_index)
+		
+		## SEPARATOR
+		popup.add_item("", 100)
+		popup.set_item_as_separator(popup.get_item_index(100), true)
+		
+		if settings["show_favourites_popup"]:
+			const id := 1
+			popup.add_item("Add to Favourites ⭐", id)
+			popup.set_item_metadata(popup.get_item_index(id), item_index) # FAVOURITE
+			popup.set_item_tooltip(popup.get_item_index(id), \
+			"Add this script to the Favourites tab.")
 		
 		if settings["show_custom_name_popup"]:
-			const id := 1
+			const id := 2
 			popup.add_item("Change Name 🏷️", id)
 			popup.set_item_metadata(popup.get_item_index(id), item_index) # NAME
 			popup.set_item_tooltip(popup.get_item_index(id), \
 			"You can setup a custom name to the script item in this list. 
 			It doesn't affect script's name in the filesystem.")
 		
-	
 		if settings["show_lock_popup"]:
-			const id := 2
+			const id := 3
 			popup.add_item("Toggle Lock 🔒", id)
 			popup.set_item_metadata(popup.get_item_index(id), item_index) # LOCK
 			popup.set_item_tooltip(popup.get_item_index(id), \
 			"Lock position of the script, so the sorting algorithm will ignore it.")
-
 		
-		if settings["show_favourites_popup"]:
-			const id := 3
-			popup.add_item("Add to Favourites ⭐", id)
-			popup.set_item_metadata(popup.get_item_index(id), item_index) # FAVOURITE
-			popup.set_item_tooltip(popup.get_item_index(id), \
-			"Add this script to the Favourites tab.")
-
-	
 		if settings["show_tests_popup"]:
 			const id := 4
 			popup.add_item("Add to Tests 🧪", id)
 			popup.set_item_metadata(popup.get_item_index(id), item_index) # TEST
 			popup.set_item_disabled(popup.get_item_index(id), script_item.type != "scripts")
 			popup.set_item_tooltip(popup.get_item_index(id), "Add this script to the Tests tab.")
+		
+		## SEPARATOR
+		popup.add_item("", 101)
+		popup.set_item_as_separator(popup.get_item_index(101), true)
+		
+		## CLOSE All
+		popup.add_item("Close All Scripts", 5)
+		popup.set_item_metadata(popup.get_item_index(5), item_index)
+		
+		## CLOSE OTHER
+		popup.add_item("Close Other Scripts", 6)
+		popup.set_item_metadata(popup.get_item_index(6), item_index)
+		
+		## CLOSE DOCS
+		popup.add_item("Close Docs", 7)
+		popup.set_item_metadata(popup.get_item_index(7), item_index)
+		
+		## CLOSE NON FAVS
+		popup.add_item("Close Non-Favourites", 8)
+		popup.set_item_metadata(popup.get_item_index(8), item_index)
+		popup.set_item_tooltip(popup.get_item_index(8), "Close all items, but keep Favourites.")
 
 func _on_popup_action(id: int) -> void:
 	var script_index: int = popup.get_item_metadata(popup.get_item_index(id))
 	var script_item: ScriptItem = get_script_from_list_by_index(script_index)
 	
 	if id == 0: # CLOSE
-		if script_list.item_count == 0: return
-		script_list.item_selected.emit(script_index)
-		delete_script_item(script_index)
+		list_close_current(script_item)
 	
-	if id == 1: # NAME
+	if id == 1: # FAVORITE
+		if favs.has(script_item):
+			favs.erase(script_item)
+		else:
+			favs.append(script_item)
+			sort_tab("★")
+	
+	if id == 2: # NAME
 		if renamed_script:
 			if renamed_script == script_item:
 				renamed_script = null
@@ -1648,15 +1759,8 @@ func _on_popup_action(id: int) -> void:
 			script_list.item_selected.emit(script_index)
 		check_rename_status(script_item)
 	
-	if id == 2: # LOCK
+	if id == 3: # LOCK
 		toggle_script_lock(script_item, get_current_tab())
-	
-	if id == 3: # FAVORITE
-		if favs.has(script_item):
-			favs.erase(script_item)
-		else:
-			favs.append(script_item)
-			sort_tab("★")
 	
 	if id == 4: # TEST
 		if tests.has(script_item):
@@ -1664,6 +1768,19 @@ func _on_popup_action(id: int) -> void:
 		else:
 			tests.append(script_item)
 			sort_tab("tests")
+	
+	if id == 5: # CLOSE ALL
+		list_close_all()
+		engine_list_close_all()
+	
+	if id == 6: # CLOSE OTHER
+		list_close_other(script_item)
+	
+	if id == 7: # CLOSE DOCS
+		list_close_docs()
+	
+	if id == 8: # CLOSE FAVS
+		list_close_all_non_favs()
 
 
 ## CUSTOM NAME
