@@ -936,6 +936,7 @@ func delete_script_item(script_item: ScriptItem) -> void:
 	if script_index < script_list.item_count: 
 		script_list.item_selected.emit(script_index)
 		engine_list_close_current()
+		script_list.remove_item(script_index)
 	
 	
 	all.erase(script_item)
@@ -1082,6 +1083,11 @@ func list_close_docs() -> void:
 	docs.clear()
 
 func list_close_all() -> void:
+	if settings["close_favourites_only_manually"]:
+		print(1)
+		list_close_all_non_favs()
+		return
+	
 	current_script = null
 	clear_all_arrays()
 	engine_script_list.clear()
@@ -1089,12 +1095,18 @@ func list_close_all() -> void:
 
 func list_close_all_non_favs() -> void:
 	if all.is_empty(): return
-	if favs.is_empty(): list_close_all()
+	
+	if favs.is_empty():
+		if not settings["close_favourites_only_manually"]: list_close_all()
+		return
 	
 	for i in range(all.size() - 1, -1, -1):
 		
 		var _script := all[i]
 		
+		if _script == current_script: 
+			current_script = null
+			script_list.deselect_all()
 		if not _script: continue
 		if favs.has(_script): continue
 		
@@ -1252,8 +1264,9 @@ func list_select_script(_script: ScriptItem, index := -1) -> void:
 			var editor := editors[0]
 			editor.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
 		else: ## Alternative Search
-			var editor_help = engine_script_editor.find_children\
-			("*", "EditorHelp", true, false)[0]
+			var other_editors := engine_script_editor.find_children("*", "EditorHelp", true, false)
+			if other_editors.is_empty(): return
+			var editor_help = other_editors[0]
 			if editor_help:
 				editor_help.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
 	else:
