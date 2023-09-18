@@ -1064,9 +1064,15 @@ func list_close_other(selected_script: ScriptItem) -> void:
 	if all.size() < 2: return
 	
 	for i in range(all.size()-1, -1, -1):
+		var _script := all[i]
 		
-		if all[i] == selected_script: continue
-		delete_script_item(all[i])
+		if _script == selected_script: continue
+		
+		if settings["close_favourites_only_manually"]:
+			if favs.has(_script):
+				continue
+		
+		delete_script_item(_script)
 
 func list_close_docs() -> void:
 	if all.is_empty(): return
@@ -1074,6 +1080,10 @@ func list_close_docs() -> void:
 	for i in range(all.size() - 1, -1, -1):
 		
 		var _script := all[i]
+		
+		if settings["close_favourites_only_manually"]:
+			if favs.has(_script):
+				continue
 		
 		if not _script: continue
 		if _script.type != "docs": continue
