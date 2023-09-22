@@ -1308,6 +1308,7 @@ func methods_list_update() -> void:
 	
 	if current_script.type == "docs" and settings["show_docs_headers_list"]:
 		
+		vsplit.collapsed = false
 		method_search_bar.visible = false
 		method_list.visible = true
 		
@@ -1318,6 +1319,7 @@ func methods_list_update() -> void:
 	
 	elif current_script.type == "scripts" and settings["show_method_list"]:
 		
+		vsplit.collapsed = false
 		method_list.visible = true
 		method_search_bar.visible = settings["show_method_search_bar"] as bool
 		
@@ -1333,6 +1335,7 @@ func methods_list_update() -> void:
 	else:
 		method_list.visible = false
 		method_search_bar.visible = false
+		vsplit.collapsed = true
 	
 	if method_search_button.get_popup().is_item_checked(1):
 		method_list.sort_items_by_text()
