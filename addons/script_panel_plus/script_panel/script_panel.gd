@@ -116,10 +116,10 @@ var tests_icon:   Texture2D
 ## MAIN
  
 func _enter_tree() -> void:
-	scripts_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/scripts.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
-	docs_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/docs.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
-	files_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/files.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
-	tests_icon = ResourceLoader.load("res://addons/script_panel_plus/script_panel/icons/tests.svg", "Texture2D", ResourceLoader.CACHE_MODE_REPLACE)
+	scripts_icon = get_theme_icon("GDScript", "EditorIcons")
+	docs_icon = get_theme_icon("NodeInfo", "EditorIcons")
+	files_icon = get_theme_icon("Object", "EditorIcons")
+	tests_icon = get_theme_icon("Popup", "EditorIcons")
 
 func _ready() -> void:
 	## NODES
@@ -141,6 +141,9 @@ func _ready() -> void:
 	zen_button = $VBoxContainer/InfoPanel/ZenButton
 	hide_button = $VBoxContainer/InfoPanel/HideButton
 	show_button = $ShowButton
+	
+	search_line.right_icon = get_theme_icon("Search", "EditorIcons")
+	method_search_line.right_icon = get_theme_icon("Search", "EditorIcons")
 	
 	## SIGNALS
 	popup.id_pressed.connect(_on_popup_action)
