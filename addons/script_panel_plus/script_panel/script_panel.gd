@@ -894,8 +894,7 @@ func add_script_item_by_engine_index(index: int, push_front := false) -> void:
 		add_script_item(text, path, type, push_front)
 	
 	## SCRIPT
-	elif engine_script_list.get_item_tooltip(index).find(".gd") != -1 or\
-	engine_script_list.get_item_tooltip(index).find(".cs") != -1:
+	elif engine_script_list.get_item_tooltip(index).find(".gd") != -1:
 		var text := engine_script_list.get_item_text(index)
 		var path := engine_script_list.get_item_tooltip(index)
 		var type := "scripts"
