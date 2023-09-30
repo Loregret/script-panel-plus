@@ -1272,15 +1272,32 @@ func list_select_script(_script: ScriptItem, index := -1) -> void:
 	elif res_path.contains("Class Reference"):
 		## For Documentation
 		var editors := engine_script_editor.get_open_script_editors()
+		
 		if not editors.is_empty():
 			var editor := editors[0]
-			editor.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
+			var has_item := false
+			
+			if settings['docs_remember_last_pos']: ## Load last position of the docs
+				## If script is in the list already, then reselect it
+				for idx in engine_script_list.item_count:
+					if str(engine_script_list.get_item_tooltip(idx)) == res_path:
+						engine_script_list.select(idx)
+						engine_script_list.item_selected.emit(idx)
+						has_item = true
+			
+			if not has_item:
+				editor.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
+		
 		else: ## Alternative Search
 			var other_editors := engine_script_editor.find_children("*", "EditorHelp", true, false)
+			
 			if other_editors.is_empty(): return
+			
 			var editor_help = other_editors[0]
+			
 			if editor_help:
 				editor_help.go_to_help.emit(res_path.get_slice(" Class Reference", 0))
+	
 	else:
 		## Deleted
 		if index != -1: delete_script_item_by_index(index)
