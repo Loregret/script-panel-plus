@@ -1277,7 +1277,7 @@ func list_select_script(_script: ScriptItem, index := -1) -> void:
 			var editor := editors[0]
 			var has_item := false
 			
-			if settings['docs_remember_last_pos']: ## Load last position of the docs
+			if settings['docs_save_last_position']: ## Load last position of the docs
 				## If script is in the list already, then reselect it
 				for idx in engine_script_list.item_count:
 					if str(engine_script_list.get_item_tooltip(idx)) == res_path:
