@@ -24,6 +24,10 @@ window/subwindows/embed_subwindows=false
 
 project/assembly_name="Script Panel Plus"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/script_panel_plus/plugin.cfg")
+
 [filesystem]
 
 import/blender/enabled=false

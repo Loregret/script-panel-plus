@@ -32,8 +32,8 @@ var zen_button:           BaseButton
 var save_data := {}
 var load_data := {}
 
-const old_save_path := "res://addons/script_panel_plus/saves/save.old"
-const new_save_path := "res://addons/script_panel_plus/saves/save"
+const old_save_path := "res://addons/script_panel_plus/saves/autosave_old.save"
+const new_save_path := "res://addons/script_panel_plus/saves/autosave.save"
 
 ## Script Arrays
 var all:     Array[ScriptItem] = []
