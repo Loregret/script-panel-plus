@@ -19,3 +19,4 @@ addons/script_panel_plus/script_panel/icons/*.import
 
 # Plugin save files
 addons/script_panel_plus/saves/*.save
+addons/script_panel_plus/saves/*.backup

@@ -2,9 +2,10 @@
 extends EditorPlugin
 
 const project_settings_category := "script_panel_plus/panel_settings/"
-const config_path := "res://addons/script_panel_plus/configs/config.cfg"
-const defaults_path := "res://addons/script_panel_plus/configs/defaults.cfg"
 const scene := preload("res://addons/script_panel_plus/script_panel/script_panel.tscn")
+
+var config_path := "res://addons/script_panel_plus/configs/config.cfg"
+var defaults_path := "res://addons/script_panel_plus/configs/defaults.cfg"
 
 var config: ConfigFile
 var defaults: ConfigFile
@@ -79,6 +80,7 @@ func load_config() -> void:
 	
 	if err: push_error(err)
 	if err2: push_error(err2)
+	
 	load_project_settings()
 	set_defaults()
 
@@ -104,7 +106,9 @@ func load_project_settings() -> void:
 			var value = config.get_value(section, key)
 			var path := project_settings_category + key
 			ProjectSettings.set_setting(path, value)
+			ProjectSettings.set_as_basic(path, true)
 	
+	update_save_path_setting()
 	ProjectSettings.save()
 
 func save_project_settings() -> void:
@@ -129,6 +133,15 @@ func set_defaults() -> void:
 			ProjectSettings.set_initial_value(path, value)
 	ProjectSettings.save()
 
+func update_save_path_setting() -> void:
+	var save_folder_property_info = {
+	"name": project_settings_category + "save_path",
+	"type": TYPE_STRING,
+	"hint": PROPERTY_HINT_DIR,
+	"hint_string": "Session save folder"
+	}
+	ProjectSettings.add_property_info(save_folder_property_info)
+
 
 ## SHOW / HIDE
 
@@ -141,7 +154,10 @@ func check_top_bar_visibility() -> void:
 		hide_top_bar()
 
 func check_current_screen_button_visibility() -> void:
-	if settings["show_screen_select_button"] and not settings["show_top_bar"]:
+	var editor_settings := engine_editor_interface.get_editor_settings()
+	var multi_window := editor_settings.get_setting("interface/multi_window/enable")
+	
+	if settings["show_screen_select_button"] and multi_window and not settings["show_top_bar"]:
 		show_screen_select_button()
 	else:
 		hide_screen_select_button()
@@ -294,6 +310,15 @@ func upload_engine_nodes_to_script_panel() -> void:
 	script_panel.engine_editor_interface = engine_editor_interface
 	script_panel.engine_script_editor = engine_script_editor
 	script_panel.engine_script_list = engine_script_list
+
+
+## PRINT
+
+func print_message(text: String) -> void:
+	print_rich("[color=cadetblue][b]Script Panel Plus: [/b][/color]", text)
+
+func print_error(text: String) -> void:
+	print_rich("[color=cadetblue][b]Script Panel Plus: [/b][/color][color=lightcoral]", text, "[/color]")
 
 
 ## MISC

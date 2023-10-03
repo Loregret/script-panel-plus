@@ -32,8 +32,6 @@ var zen_button:           BaseButton
 var save_data := {}
 var load_data := {}
 
-const old_save_path := "res://addons/script_panel_plus/saves/autosave_old.save"
-const new_save_path := "res://addons/script_panel_plus/saves/autosave.save"
 
 ## Script Arrays
 var all:     Array[ScriptItem] = []
@@ -1381,6 +1379,18 @@ func _on_method_search_button_pressed(id: int) -> void:
 
 ## SAVE
 
+func get_save_filepath() -> String:
+	var save_path := settings.get("save_path", "")
+	var save_name := settings.get("save_name", "")
+	var result := (save_path + save_name) as String
+	var dir := DirAccess.open(save_path)
+	
+	if not dir:
+		plugin_reference.print_error("Save folder path is invalid. (%s)" % result)
+		return ""
+	
+	return result
+
 func get_script_item_as_dict(script_item: ScriptItem) -> Dictionary:
 	var result := {
 		"original_text": script_item.original_text,
@@ -1392,9 +1402,13 @@ func get_script_item_as_dict(script_item: ScriptItem) -> Dictionary:
 	return result
 
 func save_last_session() -> void:
-	if not settings["save_session"]: return
+	if not settings["save_session_on_exit"]: return
 	
-	var file = FileAccess.open(new_save_path, FileAccess.WRITE)
+	var file = FileAccess.open(get_save_filepath(), FileAccess.WRITE)
+	
+	if not file:
+		plugin_reference.print_error("Failed to save session.")
+		return
 	
 	_save_sorting()
 	_save_font_size()
@@ -1409,7 +1423,7 @@ func save_last_session() -> void:
 	file.store_var(save_data, true)
 
 func _save_backup() -> void:
-	var file = FileAccess.open(old_save_path, FileAccess.WRITE)
+	var file = FileAccess.open(get_save_filepath() + ".backup", FileAccess.WRITE)
 	file.store_var(save_data, true)
 
 func _save_font_size() -> void:
@@ -1486,7 +1500,7 @@ func get_current_plugin_version() -> String:
 	var config := ConfigFile.new()
 	var err := config.load(cfg_path)
 	
-	if err: push_error(err)
+	if err: return result
 	
 	for section in config.get_sections():
 		for key in config.get_section_keys(section):
@@ -1500,18 +1514,24 @@ func get_current_plugin_version() -> String:
 ## LOAD
 
 func load_last_session() -> void:
-	if not settings["save_session"]:
+	if not settings["save_session_on_exit"]:
 		return
 	
-	var file = FileAccess.open(new_save_path, FileAccess.READ)
+	var file = FileAccess.open(get_save_filepath(), FileAccess.READ)
 	if file: 
 		load_data = file.get_var()
 	else:
+		plugin_reference.print_error("Failed to load previous session.")
 		return
 	
-	if load_data.is_empty(): return
+	if load_data.is_empty(): 
+		plugin_reference.print_error("Failed to load previous session.")
+		return
 	
 	if _is_plugin_updated(): ## deletes save file, if it has outdated version
+		plugin_reference.print_message("Plugin was updated to version %s. Previous save session will be deleted to avoid incompatibility errors." % get_current_plugin_version())
+		OS.move_to_trash( ProjectSettings.globalize_path(get_save_filepath()) )
+		
 		return
 	
 	_load_tabs()
@@ -1642,14 +1662,12 @@ func _is_plugin_updated() -> bool:
 	if not load_data.has("version"): return false
 	
 	if load_data["version"] != get_current_plugin_version():
-		print_rich("[color=cadetblue][b]Script Panel Plus:[/b][/color] plugin was updated to version %s. Previous save session was deleted to avoid incompatibility errors." % get_current_plugin_version())
-		OS.move_to_trash( ProjectSettings.globalize_path(new_save_path) )
 		return true
 	
 	return false
 
 
-## ERRORS
+## SCRIPT ERRORS
 
 func add_error(script_path: String, error_text: String) -> void:
 	var new_error := [script_path, error_text]
