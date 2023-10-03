@@ -137,9 +137,10 @@ func update_save_path_setting() -> void:
 	var save_folder_property_info = {
 	"name": project_settings_category + "save_path",
 	"type": TYPE_STRING,
-	"hint": PROPERTY_HINT_DIR,
+	"hint": PROPERTY_HINT_GLOBAL_DIR,
 	"hint_string": "Session save folder"
 	}
+	
 	ProjectSettings.add_property_info(save_folder_property_info)
 
 
