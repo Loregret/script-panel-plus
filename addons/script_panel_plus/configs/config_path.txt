@@ -1,1 +1,1 @@
-/home/loregret/Downloads/temp
+res://addons/script_panel_plus/configs
