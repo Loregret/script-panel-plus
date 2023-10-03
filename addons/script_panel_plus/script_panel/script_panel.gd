@@ -1382,7 +1382,7 @@ func _on_method_search_button_pressed(id: int) -> void:
 func get_save_filepath() -> String:
 	var save_path := settings.get("save_path", "")
 	var save_name := settings.get("save_name", "")
-	var result := (save_path + save_name) as String
+	var result := (save_path.path_join(save_name)) as String
 	var dir := DirAccess.open(save_path)
 	
 	if not dir:
