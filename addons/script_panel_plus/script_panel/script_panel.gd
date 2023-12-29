@@ -232,7 +232,9 @@ func check_for_script_change() -> void:
 			current_script = get_script_from_engine_list_index(selected_item)
 			sort_all_tab()
 			update_locked_scripts_position()
-			current_script.text = custom_names[str(current_script)]
+
+			if str(current_script) in custom_names:
+				current_script.text = custom_names[str(current_script)]
 	
 	_on_script_editor_changed(current_script)
 	check_current_tab()
