@@ -232,9 +232,11 @@ func check_for_script_change() -> void:
 			current_script = get_script_from_engine_list_index(selected_item)
 			sort_all_tab()
 			update_locked_scripts_position()
-
-			if str(current_script) in custom_names:
-				current_script.text = custom_names[str(current_script)]
+			
+			
+			if settings["save_scripts_custom_name"]:
+				if str(current_script) in custom_names:
+					current_script.text = custom_names[str(current_script)]
 	
 	_on_script_editor_changed(current_script)
 	check_current_tab()
@@ -442,8 +444,9 @@ func _on_item_selected(index: int) -> void:
 	var _script := script_list.get_item_metadata(index)
 	list_select_script(_script, index)
 	
-	if str(_script) in custom_names:
-		_script.text = custom_names[str(_script)]
+	if settings["save_scripts_custom_name"]:
+		if str(_script) in custom_names:
+			_script.text = custom_names[str(_script)]
 
 func _on_error_input(event: InputEvent) -> void:
 	if not event is InputEventMouseButton: return
@@ -1554,7 +1557,8 @@ func load_last_session() -> void:
 	update_font_size()
 	sort_current_tab()
 	
-	load_custom_names()
+	if settings["save_scripts_custom_name"]:
+		load_custom_names()
 
 func get_script_item_from_dict(dict: Dictionary) -> ScriptItem:
 	var _orig_text: String = dict.get("original_text")
@@ -1882,7 +1886,8 @@ func _on_custom_name_submit() -> void:
 	
 	custom_names[str(current_script)] = current_script.text
 	
-	save_custom_names()
+	if settings["save_scripts_custom_name"]:
+		save_custom_names()
 
 func _on_custom_name_restore() -> void:
 	current_script.text = current_script.original_text
@@ -1894,20 +1899,25 @@ func _on_custom_name_cancel() -> void:
 	rename_bar_line.text = ""
 
 func load_custom_names():
+	if not settings["save_scripts_custom_name"]: return
+	
 	if not FileAccess.file_exists(custom_names_path):
 		#print("No file found. Check if the file: '" + custom_names_path + " exist.")
 		var file = FileAccess.open(custom_names_path, FileAccess.WRITE)
 		file.store_string(JSON.stringify({}))
 		file.close()
 		return false
-		
+	
 	var file = FileAccess.open(custom_names_path, FileAccess.READ)
 	var data = JSON.parse_string(file.get_as_text())
 	if data != null:
 		custom_names = data
 	file.close()
 	
+
 func save_custom_names():
+	if not settings["save_scripts_custom_name"]: return
+	
 	var file = FileAccess.open(custom_names_path, FileAccess.WRITE)
 	
 	if file != null:

@@ -33,3 +33,7 @@ import/fbx/enabled=false
 
 renderer/rendering_method="mobile"
 renderer/rendering_method.mobile="gl_compatibility"
+
+[script_panel_plus]
+
+panel_settings/save_custom_names=false
