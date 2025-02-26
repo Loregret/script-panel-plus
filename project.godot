@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Script Panel Plus"
+config/tags=PackedStringArray("finished", "my_project")
 run/main_scene="res://addons/script_panel_plus/script_panel/script_panel.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 boot_splash/show_image=false
@@ -23,6 +24,10 @@ window/subwindows/embed_subwindows=false
 [dotnet]
 
 project/assembly_name="Script Panel Plus"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/script_panel_plus/plugin.cfg")
 
 [filesystem]
 
