@@ -264,6 +264,9 @@ func check_for_missing_scripts() -> void:
 
 func check_errors(script_editor: ScriptEditorBase) -> void:
 	var label: Label = get_error_label(script_editor)
+	
+	if not label: return
+	
 	var text:String = label.text
 	
 	if text:
@@ -339,6 +342,10 @@ func check_current_error_label()  -> void:
 	var current_editor := get_current_script_editor()
 	var engine_error_label = get_error_label(current_editor)
 	
+	if not engine_error_label:
+		error_label.visible = false
+		return
+	
 	var engine_error_text:String = engine_error_label.text
 	
 	error_label.text = engine_error_text
@@ -353,7 +360,6 @@ func check_current_line_label()   -> void:
 	
 	if not current_script: return
 	
-	
 	var is_script:bool = current_script.get("type") == "scripts"
 	
 	line_label.visible = is_script
@@ -363,6 +369,8 @@ func check_current_line_label()   -> void:
 	var current_editor := get_current_script_editor()
 	
 	var engine_lines_label = get_line_label(current_editor)
+	
+	if not engine_lines_label: return
 	
 	var text:String = engine_lines_label.text
 	
@@ -514,8 +522,8 @@ func get_error_label(script_editor: ScriptEditorBase) -> Label:
 	return result
 
 func get_line_label(script_editor: ScriptEditorBase)  -> Label:
+	if not script_editor: return
 	var result: Label = script_editor.get_child(0).get_child(0).get_child(1).get_child(7) as Label
-	#print(script_editor.get_child(0).get_child(0).get_child(1).get_children())
 	return result
 
 func engine_list_close_current() -> void:
